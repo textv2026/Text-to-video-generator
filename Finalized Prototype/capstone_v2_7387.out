@@ -1,0 +1,552 @@
+==========================================
+Capstone VidGen Pipeline v2 (FIXED)
+==========================================
+Job ID: 7387
+Node: gpucluster-g1
+Start time: Sat Jul 12 19:11:52 HKT 2025
+✓ Working in: /userhome/cs3/adelalau/Capstone VidGen/Finalized Prototype
+Loading modules...
+Creating fresh conda environment...
+Channels:
+ - defaults
+Platform: linux-64
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu
+
+  added / updated specs:
+    - python=3.9
+
+
+The following NEW packages will be INSTALLED:
+
+  _libgcc_mutex      pkgs/main/linux-64::_libgcc_mutex-0.1-main 
+  _openmp_mutex      pkgs/main/linux-64::_openmp_mutex-5.1-1_gnu 
+  bzip2              pkgs/main/linux-64::bzip2-1.0.8-h5eee18b_6 
+  ca-certificates    pkgs/main/linux-64::ca-certificates-2025.2.25-h06a4308_0 
+  expat              pkgs/main/linux-64::expat-2.7.1-h6a678d5_0 
+  ld_impl_linux-64   pkgs/main/linux-64::ld_impl_linux-64-2.40-h12ee557_0 
+  libffi             pkgs/main/linux-64::libffi-3.4.4-h6a678d5_1 
+  libgcc-ng          pkgs/main/linux-64::libgcc-ng-11.2.0-h1234567_1 
+  libgomp            pkgs/main/linux-64::libgomp-11.2.0-h1234567_1 
+  libstdcxx-ng       pkgs/main/linux-64::libstdcxx-ng-11.2.0-h1234567_1 
+  libxcb             pkgs/main/linux-64::libxcb-1.17.0-h9b100fa_0 
+  ncurses            pkgs/main/linux-64::ncurses-6.4-h6a678d5_0 
+  openssl            pkgs/main/linux-64::openssl-3.0.16-h5eee18b_0 
+  pip                pkgs/main/noarch::pip-25.1-pyhc872135_2 
+  pthread-stubs      pkgs/main/linux-64::pthread-stubs-0.3-h0ce48e5_1 
+  python             pkgs/main/linux-64::python-3.9.23-he99959a_0 
+  readline           pkgs/main/linux-64::readline-8.2-h5eee18b_0 
+  setuptools         pkgs/main/linux-64::setuptools-78.1.1-py39h06a4308_0 
+  sqlite             pkgs/main/linux-64::sqlite-3.45.3-h5eee18b_0 
+  tk                 pkgs/main/linux-64::tk-8.6.14-h993c535_1 
+  tzdata             pkgs/main/noarch::tzdata-2025b-h04d1e81_0 
+  wheel              pkgs/main/linux-64::wheel-0.45.1-py39h06a4308_0 
+  xorg-libx11        pkgs/main/linux-64::xorg-libx11-1.8.12-h9b100fa_1 
+  xorg-libxau        pkgs/main/linux-64::xorg-libxau-1.0.12-h9b100fa_0 
+  xorg-libxdmcp      pkgs/main/linux-64::xorg-libxdmcp-1.1.5-h9b100fa_0 
+  xorg-xorgproto     pkgs/main/linux-64::xorg-xorgproto-2024.1-h5eee18b_1 
+  xz                 pkgs/main/linux-64::xz-5.6.4-h5eee18b_1 
+  zlib               pkgs/main/linux-64::zlib-1.2.13-h5eee18b_1 
+
+
+
+Downloading and Extracting Packages: ...working... done
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+#
+# To activate this environment, use
+#
+#     $ conda activate poem_vidgen_hgpu
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+Installing PyTorch with CUDA support...
+Channels:
+ - pytorch
+ - nvidia
+ - defaults
+Platform: linux-64
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu
+
+  added / updated specs:
+    - pytorch
+    - pytorch-cuda=11.8
+    - torchaudio
+    - torchvision
+
+
+The following NEW packages will be INSTALLED:
+
+  blas               pkgs/main/linux-64::blas-1.0-mkl 
+  brotlicffi         pkgs/main/linux-64::brotlicffi-1.0.9.2-py39h6a678d5_1 
+  certifi            pkgs/main/linux-64::certifi-2025.6.15-py39h06a4308_0 
+  cffi               pkgs/main/linux-64::cffi-1.17.1-py39h1fdaa30_1 
+  charset-normalizer pkgs/main/noarch::charset-normalizer-3.3.2-pyhd3eb1b0_0 
+  cuda-cudart        nvidia/linux-64::cuda-cudart-11.8.89-0 
+  cuda-cupti         nvidia/linux-64::cuda-cupti-11.8.87-0 
+  cuda-libraries     nvidia/linux-64::cuda-libraries-11.8.0-0 
+  cuda-nvrtc         nvidia/linux-64::cuda-nvrtc-11.8.89-0 
+  cuda-nvtx          nvidia/linux-64::cuda-nvtx-11.8.86-0 
+  cuda-runtime       nvidia/linux-64::cuda-runtime-11.8.0-0 
+  cuda-version       nvidia/noarch::cuda-version-12.9-3 
+  ffmpeg             pytorch/linux-64::ffmpeg-4.3-hf484d3e_0 
+  filelock           pkgs/main/linux-64::filelock-3.17.0-py39h06a4308_0 
+  freetype           pkgs/main/linux-64::freetype-2.13.3-h4a9f257_0 
+  giflib             pkgs/main/linux-64::giflib-5.2.2-h5eee18b_0 
+  gmp                pkgs/main/linux-64::gmp-6.3.0-h6a678d5_0 
+  gmpy2              pkgs/main/linux-64::gmpy2-2.2.1-py39h5eee18b_0 
+  gnutls             pkgs/main/linux-64::gnutls-3.6.15-he1e5248_0 
+  idna               pkgs/main/linux-64::idna-3.7-py39h06a4308_0 
+  intel-openmp       pkgs/main/linux-64::intel-openmp-2023.1.0-hdb19cb5_46306 
+  jinja2             pkgs/main/linux-64::jinja2-3.1.6-py39h06a4308_0 
+  jpeg               pkgs/main/linux-64::jpeg-9e-h5eee18b_3 
+  lame               pkgs/main/linux-64::lame-3.100-h7b6447c_0 
+  lcms2              pkgs/main/linux-64::lcms2-2.16-h92b89f2_1 
+  lerc               pkgs/main/linux-64::lerc-4.0.0-h6a678d5_0 
+  libcublas          nvidia/linux-64::libcublas-11.11.3.6-0 
+  libcufft           nvidia/linux-64::libcufft-10.9.0.58-0 
+  libcufile          nvidia/linux-64::libcufile-1.14.1.1-4 
+  libcurand          nvidia/linux-64::libcurand-10.3.10.19-0 
+  libcusolver        nvidia/linux-64::libcusolver-11.4.1.48-0 
+  libcusparse        nvidia/linux-64::libcusparse-11.7.5.86-0 
+  libdeflate         pkgs/main/linux-64::libdeflate-1.22-h5eee18b_0 
+  libiconv           pkgs/main/linux-64::libiconv-1.16-h5eee18b_3 
+  libidn2            pkgs/main/linux-64::libidn2-2.3.4-h5eee18b_0 
+  libjpeg-turbo      pytorch/linux-64::libjpeg-turbo-2.0.0-h9bf148f_0 
+  libnpp             nvidia/linux-64::libnpp-11.8.0.86-0 
+  libnvjpeg          nvidia/linux-64::libnvjpeg-11.9.0.86-0 
+  libpng             pkgs/main/linux-64::libpng-1.6.39-h5eee18b_0 
+  libtasn1           pkgs/main/linux-64::libtasn1-4.19.0-h5eee18b_0 
+  libtiff            pkgs/main/linux-64::libtiff-4.7.0-hde9077f_0 
+  libunistring       pkgs/main/linux-64::libunistring-0.9.10-h27cfd23_0 
+  libwebp            pkgs/main/linux-64::libwebp-1.3.2-h9f374a3_1 
+  libwebp-base       pkgs/main/linux-64::libwebp-base-1.3.2-h5eee18b_1 
+  llvm-openmp        pkgs/main/linux-64::llvm-openmp-14.0.6-h9e868ea_0 
+  lz4-c              pkgs/main/linux-64::lz4-c-1.9.4-h6a678d5_1 
+  markupsafe         pkgs/main/linux-64::markupsafe-3.0.2-py39h5eee18b_0 
+  mkl                pkgs/main/linux-64::mkl-2023.1.0-h213fc3f_46344 
+  mkl-service        pkgs/main/linux-64::mkl-service-2.4.0-py39h5eee18b_2 
+  mkl_fft            pkgs/main/linux-64::mkl_fft-1.3.11-py39h5eee18b_0 
+  mkl_random         pkgs/main/linux-64::mkl_random-1.2.8-py39h1128e8f_0 
+  mpc                pkgs/main/linux-64::mpc-1.3.1-h5eee18b_0 
+  mpfr               pkgs/main/linux-64::mpfr-4.2.1-h5eee18b_0 
+  mpmath             pkgs/main/linux-64::mpmath-1.3.0-py39h06a4308_0 
+  nettle             pkgs/main/linux-64::nettle-3.7.3-hbbd107a_1 
+  networkx           pkgs/main/linux-64::networkx-3.2.1-py39h06a4308_0 
+  numpy              pkgs/main/linux-64::numpy-2.0.1-py39h5f9d8c6_1 
+  numpy-base         pkgs/main/linux-64::numpy-base-2.0.1-py39hb5e798b_1 
+  openh264           pkgs/main/linux-64::openh264-2.1.1-h4ff587b_0 
+  openjpeg           pkgs/main/linux-64::openjpeg-2.5.2-h0d4d230_1 
+  pillow             pkgs/main/linux-64::pillow-11.1.0-py39hac6e08b_1 
+  pycparser          pkgs/main/noarch::pycparser-2.21-pyhd3eb1b0_0 
+  pysocks            pkgs/main/linux-64::pysocks-1.7.1-py39h06a4308_0 
+  pytorch            pytorch/linux-64::pytorch-2.5.1-py3.9_cuda11.8_cudnn9.1.0_0 
+  pytorch-cuda       pytorch/linux-64::pytorch-cuda-11.8-h7e8668a_6 
+  pytorch-mutex      pytorch/noarch::pytorch-mutex-1.0-cuda 
+  pyyaml             pkgs/main/linux-64::pyyaml-6.0.2-py39h5eee18b_0 
+  requests           pkgs/main/linux-64::requests-2.32.4-py39h06a4308_0 
+  sympy              pkgs/main/linux-64::sympy-1.13.3-py39h06a4308_1 
+  tbb                pkgs/main/linux-64::tbb-2021.8.0-hdb19cb5_0 
+  torchaudio         pytorch/linux-64::torchaudio-2.5.1-py39_cu118 
+  torchtriton        pytorch/linux-64::torchtriton-3.1.0-py39 
+  torchvision        pytorch/linux-64::torchvision-0.20.1-py39_cu118 
+  typing_extensions  pkgs/main/linux-64::typing_extensions-4.12.2-py39h06a4308_0 
+  urllib3            pkgs/main/linux-64::urllib3-2.5.0-py39h06a4308_0 
+  yaml               pkgs/main/linux-64::yaml-0.2.5-h7b6447c_0 
+  zstd               pkgs/main/linux-64::zstd-1.5.6-hc292b87_0 
+
+
+
+Downloading and Extracting Packages: ...working... done
+Preparing transaction: ...working... done
+Verifying transaction: ...working... failed
+Installing basic packages...
+Channels:
+ - defaults
+Platform: linux-64
+Collecting package metadata (repodata.json): ...working... done
+Solving environment: ...working... done
+
+## Package Plan ##
+
+  environment location: /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu
+
+  added / updated specs:
+    - matplotlib
+    - numpy
+    - pandas
+    - pillow
+    - tqdm
+
+
+The following NEW packages will be INSTALLED:
+
+  blas               pkgs/main/linux-64::blas-1.0-openblas 
+  bottleneck         pkgs/main/linux-64::bottleneck-1.4.2-py39ha9d4c09_0 
+  brotli-python      pkgs/main/linux-64::brotli-python-1.0.9-py39h6a678d5_9 
+  c-ares             pkgs/main/linux-64::c-ares-1.19.1-h5eee18b_0 
+  contourpy          pkgs/main/linux-64::contourpy-1.2.1-py39hdb19cb5_1 
+  cycler             pkgs/main/noarch::cycler-0.11.0-pyhd3eb1b0_0 
+  cyrus-sasl         pkgs/main/linux-64::cyrus-sasl-2.1.28-h52b45da_1 
+  fontconfig         pkgs/main/linux-64::fontconfig-2.14.1-h55d465d_3 
+  fonttools          pkgs/main/linux-64::fonttools-4.55.3-py39h5eee18b_0 
+  freetype           pkgs/main/linux-64::freetype-2.13.3-h4a9f257_0 
+  icu                pkgs/main/linux-64::icu-73.1-h6a678d5_0 
+  importlib_resourc~ pkgs/main/linux-64::importlib_resources-6.4.0-py39h06a4308_0 
+  jpeg               pkgs/main/linux-64::jpeg-9e-h5eee18b_3 
+  kiwisolver         pkgs/main/linux-64::kiwisolver-1.4.4-py39h6a678d5_0 
+  krb5               pkgs/main/linux-64::krb5-1.20.1-h143b758_1 
+  lcms2              pkgs/main/linux-64::lcms2-2.16-h92b89f2_1 
+  lerc               pkgs/main/linux-64::lerc-4.0.0-h6a678d5_0 
+  libabseil          pkgs/main/linux-64::libabseil-20250127.0-cxx17_h6a678d5_0 
+  libcups            pkgs/main/linux-64::libcups-2.4.2-h2d74bed_1 
+  libcurl            pkgs/main/linux-64::libcurl-8.12.1-hc9e6f67_0 
+  libdeflate         pkgs/main/linux-64::libdeflate-1.22-h5eee18b_0 
+  libedit            pkgs/main/linux-64::libedit-3.1.20230828-h5eee18b_0 
+  libev              pkgs/main/linux-64::libev-4.33-h7f8727e_1 
+  libgfortran-ng     pkgs/main/linux-64::libgfortran-ng-11.2.0-h00389a5_1 
+  libgfortran5       pkgs/main/linux-64::libgfortran5-11.2.0-h1234567_1 
+  libglib            pkgs/main/linux-64::libglib-2.84.2-h37c7471_0 
+  libiconv           pkgs/main/linux-64::libiconv-1.16-h5eee18b_3 
+  libnghttp2         pkgs/main/linux-64::libnghttp2-1.57.0-h2d74bed_0 
+  libopenblas        pkgs/main/linux-64::libopenblas-0.3.29-ha39b09d_0 
+  libpng             pkgs/main/linux-64::libpng-1.6.39-h5eee18b_0 
+  libpq              pkgs/main/linux-64::libpq-17.4-hdbd6064_0 
+  libprotobuf        pkgs/main/linux-64::libprotobuf-5.29.3-h3cdef7c_1 
+  libssh2            pkgs/main/linux-64::libssh2-1.11.1-h251f7ec_0 
+  libtiff            pkgs/main/linux-64::libtiff-4.7.0-hde9077f_0 
+  libuuid            pkgs/main/linux-64::libuuid-1.41.5-h5eee18b_0 
+  libwebp-base       pkgs/main/linux-64::libwebp-base-1.3.2-h5eee18b_1 
+  libxkbcommon       pkgs/main/linux-64::libxkbcommon-1.9.1-h69220b7_0 
+  libxml2            pkgs/main/linux-64::libxml2-2.13.8-hfdd30dd_0 
+  lz4-c              pkgs/main/linux-64::lz4-c-1.9.4-h6a678d5_1 
+  matplotlib         pkgs/main/linux-64::matplotlib-3.9.2-py39h06a4308_1 
+  matplotlib-base    pkgs/main/linux-64::matplotlib-base-3.9.2-py39hbfdbfaf_1 
+  mysql              pkgs/main/linux-64::mysql-8.4.0-h721767e_2 
+  numexpr            pkgs/main/linux-64::numexpr-2.10.1-py39hd28fd6d_0 
+  numpy              pkgs/main/linux-64::numpy-2.0.2-py39hc213724_2 
+  numpy-base         pkgs/main/linux-64::numpy-base-2.0.2-py39hf387b04_2 
+  openjpeg           pkgs/main/linux-64::openjpeg-2.5.2-h0d4d230_1 
+  openldap           pkgs/main/linux-64::openldap-2.6.4-h42fbc30_0 
+  packaging          pkgs/main/linux-64::packaging-24.2-py39h06a4308_0 
+  pandas             pkgs/main/linux-64::pandas-2.2.3-py39h6a678d5_0 
+  pcre2              pkgs/main/linux-64::pcre2-10.42-hebb0a14_1 
+  pillow             pkgs/main/linux-64::pillow-11.1.0-py39hac6e08b_1 
+  pyparsing          pkgs/main/linux-64::pyparsing-3.2.0-py39h06a4308_0 
+  pyqt               pkgs/main/linux-64::pyqt-6.7.1-py39h6a678d5_1 
+  pyqt6-sip          pkgs/main/linux-64::pyqt6-sip-13.9.1-py39h5eee18b_1 
+  python-dateutil    pkgs/main/linux-64::python-dateutil-2.9.0post0-py39h06a4308_2 
+  python-tzdata      pkgs/main/noarch::python-tzdata-2025.2-pyhd3eb1b0_0 
+  pytz               pkgs/main/linux-64::pytz-2025.2-py39h06a4308_0 
+  qtbase             pkgs/main/linux-64::qtbase-6.7.3-hdaa5aa8_0 
+  qtdeclarative      pkgs/main/linux-64::qtdeclarative-6.7.3-h6a678d5_0 
+  qtsvg              pkgs/main/linux-64::qtsvg-6.7.3-he621ea3_0 
+  qttools            pkgs/main/linux-64::qttools-6.7.3-h80c7b02_0 
+  qtwebchannel       pkgs/main/linux-64::qtwebchannel-6.7.3-h6a678d5_0 
+  qtwebsockets       pkgs/main/linux-64::qtwebsockets-6.7.3-h6a678d5_0 
+  sip                pkgs/main/linux-64::sip-6.10.0-py39h6a678d5_0 
+  six                pkgs/main/linux-64::six-1.17.0-py39h06a4308_0 
+  tomli              pkgs/main/linux-64::tomli-2.0.1-py39h06a4308_0 
+  tornado            pkgs/main/linux-64::tornado-6.5.1-py39h5eee18b_0 
+  tqdm               pkgs/main/linux-64::tqdm-4.67.1-py39h2f386ee_0 
+  unicodedata2       pkgs/main/linux-64::unicodedata2-15.1.0-py39h5eee18b_1 
+  xcb-util           pkgs/main/linux-64::xcb-util-0.4.1-h5eee18b_2 
+  xcb-util-cursor    pkgs/main/linux-64::xcb-util-cursor-0.1.5-h5eee18b_0 
+  xcb-util-image     pkgs/main/linux-64::xcb-util-image-0.4.0-h5eee18b_2 
+  xcb-util-renderut~ pkgs/main/linux-64::xcb-util-renderutil-0.3.10-h5eee18b_0 
+  xkeyboard-config   pkgs/main/linux-64::xkeyboard-config-2.44-h5eee18b_0 
+  zipp               pkgs/main/linux-64::zipp-3.21.0-py39h06a4308_0 
+  zstd               pkgs/main/linux-64::zstd-1.5.6-hc292b87_0 
+
+The following packages will be DOWNGRADED:
+
+  setuptools                          78.1.1-py39h06a4308_0 --> 72.1.0-py39h06a4308_0 
+
+
+
+Downloading and Extracting Packages: ...working... done
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+Installing updated AI packages...
+Collecting diffusers==0.27.2
+  Downloading diffusers-0.27.2-py3-none-any.whl.metadata (18 kB)
+Collecting importlib-metadata (from diffusers==0.27.2)
+  Using cached importlib_metadata-8.7.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting filelock (from diffusers==0.27.2)
+  Using cached filelock-3.18.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting huggingface-hub>=0.20.2 (from diffusers==0.27.2)
+  Using cached huggingface_hub-0.33.4-py3-none-any.whl.metadata (14 kB)
+Requirement already satisfied: numpy in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from diffusers==0.27.2) (2.0.2)
+Collecting regex!=2019.12.17 (from diffusers==0.27.2)
+  Using cached regex-2024.11.6-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (40 kB)
+Collecting requests (from diffusers==0.27.2)
+  Using cached requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+Collecting safetensors>=0.3.1 (from diffusers==0.27.2)
+  Using cached safetensors-0.5.3-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.8 kB)
+Requirement already satisfied: Pillow in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from diffusers==0.27.2) (11.1.0)
+Collecting fsspec>=2023.5.0 (from huggingface-hub>=0.20.2->diffusers==0.27.2)
+  Using cached fsspec-2025.5.1-py3-none-any.whl.metadata (11 kB)
+Requirement already satisfied: packaging>=20.9 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub>=0.20.2->diffusers==0.27.2) (24.2)
+Collecting pyyaml>=5.1 (from huggingface-hub>=0.20.2->diffusers==0.27.2)
+  Using cached PyYAML-6.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+Requirement already satisfied: tqdm>=4.42.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub>=0.20.2->diffusers==0.27.2) (4.67.1)
+Collecting typing-extensions>=3.7.4.3 (from huggingface-hub>=0.20.2->diffusers==0.27.2)
+  Using cached typing_extensions-4.14.1-py3-none-any.whl.metadata (3.0 kB)
+Collecting hf-xet<2.0.0,>=1.1.2 (from huggingface-hub>=0.20.2->diffusers==0.27.2)
+  Using cached hf_xet-1.1.5-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (879 bytes)
+Requirement already satisfied: zipp>=3.20 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from importlib-metadata->diffusers==0.27.2) (3.21.0)
+Collecting charset_normalizer<4,>=2 (from requests->diffusers==0.27.2)
+  Using cached charset_normalizer-3.4.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (35 kB)
+Collecting idna<4,>=2.5 (from requests->diffusers==0.27.2)
+  Using cached idna-3.10-py3-none-any.whl.metadata (10 kB)
+Collecting urllib3<3,>=1.21.1 (from requests->diffusers==0.27.2)
+  Using cached urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting certifi>=2017.4.17 (from requests->diffusers==0.27.2)
+  Using cached certifi-2025.7.9-py3-none-any.whl.metadata (2.4 kB)
+Downloading diffusers-0.27.2-py3-none-any.whl (2.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 125.7 MB/s eta 0:00:00
+Downloading huggingface_hub-0.33.4-py3-none-any.whl (515 kB)
+Downloading hf_xet-1.1.5-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 227.4 MB/s eta 0:00:00
+Using cached fsspec-2025.5.1-py3-none-any.whl (199 kB)
+Using cached PyYAML-6.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (737 kB)
+Using cached regex-2024.11.6-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (780 kB)
+Using cached safetensors-0.5.3-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (471 kB)
+Using cached typing_extensions-4.14.1-py3-none-any.whl (43 kB)
+Using cached filelock-3.18.0-py3-none-any.whl (16 kB)
+Using cached importlib_metadata-8.7.0-py3-none-any.whl (27 kB)
+Using cached requests-2.32.4-py3-none-any.whl (64 kB)
+Using cached charset_normalizer-3.4.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (149 kB)
+Using cached idna-3.10-py3-none-any.whl (70 kB)
+Using cached urllib3-2.5.0-py3-none-any.whl (129 kB)
+Using cached certifi-2025.7.9-py3-none-any.whl (159 kB)
+Installing collected packages: urllib3, typing-extensions, safetensors, regex, pyyaml, importlib-metadata, idna, hf-xet, fsspec, filelock, charset_normalizer, certifi, requests, huggingface-hub, diffusers
+
+Successfully installed certifi-2025.7.9 charset_normalizer-3.4.2 diffusers-0.27.2 filelock-3.18.0 fsspec-2025.5.1 hf-xet-1.1.5 huggingface-hub-0.33.4 idna-3.10 importlib-metadata-8.7.0 pyyaml-6.0.2 regex-2024.11.6 requests-2.32.4 safetensors-0.5.3 typing-extensions-4.14.1 urllib3-2.5.0
+Collecting transformers==4.36.0
+  Downloading transformers-4.36.0-py3-none-any.whl.metadata (126 kB)
+Requirement already satisfied: filelock in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (3.18.0)
+Requirement already satisfied: huggingface-hub<1.0,>=0.19.3 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (0.33.4)
+Requirement already satisfied: numpy>=1.17 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (2.0.2)
+Requirement already satisfied: packaging>=20.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (24.2)
+Requirement already satisfied: pyyaml>=5.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (6.0.2)
+Requirement already satisfied: regex!=2019.12.17 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (2024.11.6)
+Requirement already satisfied: requests in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (2.32.4)
+Collecting tokenizers<0.19,>=0.14 (from transformers==4.36.0)
+  Downloading tokenizers-0.15.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.7 kB)
+Requirement already satisfied: safetensors>=0.3.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (0.5.3)
+Requirement already satisfied: tqdm>=4.27 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from transformers==4.36.0) (4.67.1)
+Requirement already satisfied: fsspec>=2023.5.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub<1.0,>=0.19.3->transformers==4.36.0) (2025.5.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub<1.0,>=0.19.3->transformers==4.36.0) (4.14.1)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub<1.0,>=0.19.3->transformers==4.36.0) (1.1.5)
+Requirement already satisfied: charset_normalizer<4,>=2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->transformers==4.36.0) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->transformers==4.36.0) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->transformers==4.36.0) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->transformers==4.36.0) (2025.7.9)
+Downloading transformers-4.36.0-py3-none-any.whl (8.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.2/8.2 MB 111.8 MB/s eta 0:00:00
+Downloading tokenizers-0.15.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.6/3.6 MB 88.6 MB/s eta 0:00:00
+Installing collected packages: tokenizers, transformers
+
+Successfully installed tokenizers-0.15.2 transformers-4.36.0
+Collecting accelerate==0.25.0
+  Downloading accelerate-0.25.0-py3-none-any.whl.metadata (18 kB)
+Requirement already satisfied: numpy>=1.17 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from accelerate==0.25.0) (2.0.2)
+Requirement already satisfied: packaging>=20.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from accelerate==0.25.0) (24.2)
+Collecting psutil (from accelerate==0.25.0)
+  Using cached psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (22 kB)
+Requirement already satisfied: pyyaml in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from accelerate==0.25.0) (6.0.2)
+Collecting torch>=1.10.0 (from accelerate==0.25.0)
+  Using cached torch-2.7.1-cp39-cp39-manylinux_2_28_x86_64.whl.metadata (29 kB)
+Requirement already satisfied: huggingface-hub in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from accelerate==0.25.0) (0.33.4)
+Requirement already satisfied: safetensors>=0.3.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from accelerate==0.25.0) (0.5.3)
+Requirement already satisfied: filelock in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch>=1.10.0->accelerate==0.25.0) (3.18.0)
+Requirement already satisfied: typing-extensions>=4.10.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch>=1.10.0->accelerate==0.25.0) (4.14.1)
+Collecting sympy>=1.13.3 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached networkx-3.2.1-py3-none-any.whl.metadata (5.2 kB)
+Collecting jinja2 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Requirement already satisfied: fsspec in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch>=1.10.0->accelerate==0.25.0) (2025.5.1)
+Collecting nvidia-cuda-nvrtc-cu12==12.6.77 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cuda-runtime-cu12==12.6.77 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cuda-cupti-cu12==12.6.80 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cudnn-cu12==9.5.1.17 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cublas-cu12==12.6.4.1 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cufft-cu12==11.3.0.4 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-curand-cu12==10.3.7.77 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cusolver-cu12==11.7.1.2 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cusparse-cu12==12.5.4.2 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-cusparselt-cu12==0.6.3 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl.metadata (6.8 kB)
+Collecting nvidia-nccl-cu12==2.26.2 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.0 kB)
+Collecting nvidia-nvtx-cu12==12.6.77 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.6 kB)
+Collecting nvidia-nvjitlink-cu12==12.6.85 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.5 kB)
+Collecting nvidia-cufile-cu12==1.11.1.6 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.5 kB)
+Collecting triton==3.3.1 (from torch>=1.10.0->accelerate==0.25.0)
+  Using cached triton-3.3.1-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (1.5 kB)
+Requirement already satisfied: setuptools>=40.8.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from triton==3.3.1->torch>=1.10.0->accelerate==0.25.0) (72.1.0)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch>=1.10.0->accelerate==0.25.0)
+  Using cached mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Requirement already satisfied: requests in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub->accelerate==0.25.0) (2.32.4)
+Requirement already satisfied: tqdm>=4.42.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub->accelerate==0.25.0) (4.67.1)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from huggingface-hub->accelerate==0.25.0) (1.1.5)
+Collecting MarkupSafe>=2.0 (from jinja2->torch>=1.10.0->accelerate==0.25.0)
+  Using cached MarkupSafe-3.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Requirement already satisfied: charset_normalizer<4,>=2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->huggingface-hub->accelerate==0.25.0) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->huggingface-hub->accelerate==0.25.0) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->huggingface-hub->accelerate==0.25.0) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from requests->huggingface-hub->accelerate==0.25.0) (2025.7.9)
+Downloading accelerate-0.25.0-py3-none-any.whl (265 kB)
+Using cached torch-2.7.1-cp39-cp39-manylinux_2_28_x86_64.whl (821.1 MB)
+Using cached nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (393.1 MB)
+Using cached nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.9 MB)
+Using cached nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl (23.7 MB)
+Using cached nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (897 kB)
+Using cached nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl (571.0 MB)
+Using cached nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (200.2 MB)
+Using cached nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.1 MB)
+Using cached nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (56.3 MB)
+Using cached nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (158.2 MB)
+Using cached nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (216.6 MB)
+Using cached nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl (156.8 MB)
+Using cached nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (201.3 MB)
+Using cached nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (19.7 MB)
+Using cached nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (89 kB)
+Using cached triton-3.3.1-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (155.6 MB)
+Using cached sympy-1.14.0-py3-none-any.whl (6.3 MB)
+Using cached mpmath-1.3.0-py3-none-any.whl (536 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached MarkupSafe-3.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (20 kB)
+Using cached networkx-3.2.1-py3-none-any.whl (1.6 MB)
+Using cached psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (277 kB)
+Installing collected packages: nvidia-cusparselt-cu12, mpmath, triton, sympy, psutil, nvidia-nvtx-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, MarkupSafe, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, jinja2, nvidia-cusolver-cu12, torch, accelerate
+
+Successfully installed MarkupSafe-3.0.2 accelerate-0.25.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.2.1 nvidia-cublas-cu12-12.6.4.1 nvidia-cuda-cupti-cu12-12.6.80 nvidia-cuda-nvrtc-cu12-12.6.77 nvidia-cuda-runtime-cu12-12.6.77 nvidia-cudnn-cu12-9.5.1.17 nvidia-cufft-cu12-11.3.0.4 nvidia-cufile-cu12-1.11.1.6 nvidia-curand-cu12-10.3.7.77 nvidia-cusolver-cu12-11.7.1.2 nvidia-cusparse-cu12-12.5.4.2 nvidia-cusparselt-cu12-0.6.3 nvidia-nccl-cu12-2.26.2 nvidia-nvjitlink-cu12-12.6.85 nvidia-nvtx-cu12-12.6.77 psutil-7.0.0 sympy-1.14.0 torch-2.7.1 triton-3.3.1
+Collecting xformers
+  Using cached xformers-0.0.31.post1-cp39-abi3-manylinux_2_28_x86_64.whl.metadata (1.1 kB)
+Collecting zhipuai
+  Using cached zhipuai-2.1.5.20250708-py3-none-any.whl.metadata (8.8 kB)
+Collecting bayesian-optimization
+  Using cached bayesian_optimization-3.0.1-py3-none-any.whl.metadata (10 kB)
+Collecting opencv-python
+  Using cached opencv_python-4.12.0.88-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (19 kB)
+Requirement already satisfied: numpy in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from xformers) (2.0.2)
+Requirement already satisfied: torch==2.7.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from xformers) (2.7.1)
+Requirement already satisfied: filelock in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (3.18.0)
+Requirement already satisfied: typing-extensions>=4.10.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (4.14.1)
+Requirement already satisfied: sympy>=1.13.3 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (1.14.0)
+Requirement already satisfied: networkx in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (3.2.1)
+Requirement already satisfied: jinja2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (3.1.6)
+Requirement already satisfied: fsspec in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (2025.5.1)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.6.77 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.6.77)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.6.77 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.6.77)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.6.80 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.6.80)
+Requirement already satisfied: nvidia-cudnn-cu12==9.5.1.17 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (9.5.1.17)
+Requirement already satisfied: nvidia-cublas-cu12==12.6.4.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.6.4.1)
+Requirement already satisfied: nvidia-cufft-cu12==11.3.0.4 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (11.3.0.4)
+Requirement already satisfied: nvidia-curand-cu12==10.3.7.77 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (10.3.7.77)
+Requirement already satisfied: nvidia-cusolver-cu12==11.7.1.2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (11.7.1.2)
+Requirement already satisfied: nvidia-cusparse-cu12==12.5.4.2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.5.4.2)
+Requirement already satisfied: nvidia-cusparselt-cu12==0.6.3 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (0.6.3)
+Requirement already satisfied: nvidia-nccl-cu12==2.26.2 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (2.26.2)
+Requirement already satisfied: nvidia-nvtx-cu12==12.6.77 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.6.77)
+Requirement already satisfied: nvidia-nvjitlink-cu12==12.6.85 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (12.6.85)
+Requirement already satisfied: nvidia-cufile-cu12==1.11.1.6 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (1.11.1.6)
+Requirement already satisfied: triton==3.3.1 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from torch==2.7.1->xformers) (3.3.1)
+Requirement already satisfied: setuptools>=40.8.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from triton==3.3.1->torch==2.7.1->xformers) (72.1.0)
+Collecting cachetools>=4.2.2 (from zhipuai)
+  Using cached cachetools-6.1.0-py3-none-any.whl.metadata (5.4 kB)
+Collecting httpx>=0.23.0 (from zhipuai)
+  Using cached httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting pydantic<3.0,>=1.9.0 (from zhipuai)
+  Using cached pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
+Collecting pydantic-core>=2.14.6 (from zhipuai)
+  Using cached pydantic_core-2.35.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+Collecting pyjwt<2.9.0,>=2.8.0 (from zhipuai)
+  Using cached PyJWT-2.8.0-py3-none-any.whl.metadata (4.2 kB)
+Collecting annotated-types>=0.6.0 (from pydantic<3.0,>=1.9.0->zhipuai)
+  Using cached annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core>=2.14.6 (from zhipuai)
+  Using cached pydantic_core-2.33.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+Collecting typing-inspection>=0.4.0 (from pydantic<3.0,>=1.9.0->zhipuai)
+  Using cached typing_inspection-0.4.1-py3-none-any.whl.metadata (2.6 kB)
+Collecting colorama<1.0.0,>=0.4.6 (from bayesian-optimization)
+  Using cached colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+Collecting scikit-learn<2.0.0,>=1.0.0 (from bayesian-optimization)
+  Using cached scikit_learn-1.6.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (18 kB)
+Collecting scipy<2.0.0,>=1.0.0 (from bayesian-optimization)
+  Using cached scipy-1.13.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+Collecting joblib>=1.2.0 (from scikit-learn<2.0.0,>=1.0.0->bayesian-optimization)
+  Using cached joblib-1.5.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting threadpoolctl>=3.1.0 (from scikit-learn<2.0.0,>=1.0.0->bayesian-optimization)
+  Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+Collecting anyio (from httpx>=0.23.0->zhipuai)
+  Using cached anyio-4.9.0-py3-none-any.whl.metadata (4.7 kB)
+Requirement already satisfied: certifi in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from httpx>=0.23.0->zhipuai) (2025.7.9)
+Collecting httpcore==1.* (from httpx>=0.23.0->zhipuai)
+  Using cached httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Requirement already satisfied: idna in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from httpx>=0.23.0->zhipuai) (3.10)
+Collecting h11>=0.16 (from httpcore==1.*->httpx>=0.23.0->zhipuai)
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from sympy>=1.13.3->torch==2.7.1->xformers) (1.3.0)
+Collecting exceptiongroup>=1.0.2 (from anyio->httpx>=0.23.0->zhipuai)
+  Using cached exceptiongroup-1.3.0-py3-none-any.whl.metadata (6.7 kB)
+Collecting sniffio>=1.1 (from anyio->httpx>=0.23.0->zhipuai)
+  Using cached sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+Requirement already satisfied: MarkupSafe>=2.0 in /userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_hgpu/lib/python3.9/site-packages (from jinja2->torch==2.7.1->xformers) (3.0.2)
+Using cached xformers-0.0.31.post1-cp39-abi3-manylinux_2_28_x86_64.whl (117.1 MB)
+Using cached zhipuai-2.1.5.20250708-py3-none-any.whl (115 kB)
+Using cached pydantic-2.11.7-py3-none-any.whl (444 kB)
+Using cached pydantic_core-2.33.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+Using cached PyJWT-2.8.0-py3-none-any.whl (22 kB)
+Using cached bayesian_optimization-3.0.1-py3-none-any.whl (36 kB)
+Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Using cached scikit_learn-1.6.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.5 MB)
+Using cached scipy-1.13.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+Using cached opencv_python-4.12.0.88-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (67.0 MB)
+Using cached annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Using cached cachetools-6.1.0-py3-none-any.whl (11 kB)
+Using cached httpx-0.28.1-py3-none-any.whl (73 kB)
+Using cached httpcore-1.0.9-py3-none-any.whl (78 kB)
+Using cached h11-0.16.0-py3-none-any.whl (37 kB)
+Using cached joblib-1.5.1-py3-none-any.whl (307 kB)
+Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+Using cached typing_inspection-0.4.1-py3-none-any.whl (14 kB)
+Using cached anyio-4.9.0-py3-none-any.whl (100 kB)
+Using cached exceptiongroup-1.3.0-py3-none-any.whl (16 kB)
+Using cached sniffio-1.3.1-py3-none-any.whl (10 kB)
+Installing collected packages: typing-inspection, threadpoolctl, sniffio, scipy, pyjwt, pydantic-core, opencv-python, joblib, h11, exceptiongroup, colorama, cachetools, annotated-types, scikit-learn, pydantic, httpcore, anyio, httpx, bayesian-optimization, zhipuai, xformers
+
+Successfully installed annotated-types-0.7.0 anyio-4.9.0 bayesian-optimization-3.0.1 cachetools-6.1.0 colorama-0.4.6 exceptiongroup-1.3.0 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 joblib-1.5.1 opencv-python-4.12.0.88 pydantic-2.11.7 pydantic-core-2.33.2 pyjwt-2.8.0 scikit-learn-1.6.1 scipy-1.13.1 sniffio-1.3.1 threadpoolctl-3.6.0 typing-inspection-0.4.1 xformers-0.0.31.post1 zhipuai-2.1.5.20250708
+==========================================
+Verifying Installation:
+✗ Import test failed!

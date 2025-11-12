@@ -1,0 +1,596 @@
+============================================================
+AUTOMATED POEM VIDEO GENERATION PIPELINE
+============================================================
+
+Found 46 poems in database:
+ 1. 感遇四首其一
+ 2. 感遇四首其二
+ 3. 感遇四首其三
+ 4. 感遇四首其四
+ 5. 下终南山过斛斯山人宿置酒
+ 6. 月下独酌
+ 7. 春思
+ 8. 望岳
+ 9. 赠卫八处士
+10. 佳人
+11. 梦李白二首·其一
+12. 梦李白二首·其二
+13. 送别
+14. 送綦毋潜落第还乡
+15. 青溪
+16. 渭川田家
+17. 西施咏
+18. 同从弟南斋玩月忆山阴崔少府
+19. 郡斋雨中与诸文士燕集
+20. 初发扬子寄元大校书
+21. 寄全椒山中道士
+22. 长安遇冯著
+23. 夕次盱眙县
+24. 东郊
+25. 送杨氏女
+26. 晨诣超师院读禅经
+27. 溪居
+28. 塞上曲·其一
+29. 塞下曲
+30. 关山月
+31. 子夜四时歌·春歌
+32. 子夜四时歌·夏歌
+33. 子夜四时歌·秋歌
+34. 子夜四时歌·冬歌
+35. 烈女操
+36. 游子吟
+37. 登幽州台歌
+38. 古意
+39. 送陈章甫
+40. 琴歌
+41. 听董大弹胡笳弄兼寄语房给事
+42. 听安万善吹觱篥歌
+43. 夜归鹿门山歌
+44. 庐山谣寄卢侍御虚舟
+45. 梦游天姥吟留别 
+46. 金陵酒肆留别 
+
+Found 27 already completed poems:
+ 1. 溪居
+ 2. 感遇四首其一
+ 3. 佳人
+ 4. 梦李白二首·其二
+ 5. 渭川田家
+ 6. 下终南山过斛斯山人宿置酒
+ 7. 梦李白二首·其一
+ 8. 送别
+ 9. 初发扬子寄元大校书
+10. 送杨氏女
+11. 感遇四首其二
+12. 西施咏
+13. 寄全椒山中道士
+14. 长安遇冯著
+15. 东郊
+16. 望岳
+17. 晨诣超师院读禅经
+18. 同从弟南斋玩月忆山阴崔少府
+19. 赠卫八处士
+20. 感遇四首其四
+21. 夕次盱眙县
+22. 青溪
+23. 感遇四首其三
+24. 春思
+25. 月下独酌
+26. 送綦毋潜落第还乡
+27. 郡斋雨中与诸文士燕集
+
+============================================================
+PROCESSING SUMMARY:
+============================================================
+Total available poems: 46
+Already completed: 27
+Remaining to process: 19
+
+Poems to be processed:
+ 1. 塞上曲·其一
+ 2. 塞下曲
+ 3. 关山月
+ 4. 子夜四时歌·春歌
+ 5. 子夜四时歌·夏歌
+ 6. 子夜四时歌·秋歌
+ 7. 子夜四时歌·冬歌
+ 8. 烈女操
+ 9. 游子吟
+10. 登幽州台歌
+11. 古意
+12. 送陈章甫
+13. 琴歌
+14. 听董大弹胡笳弄兼寄语房给事
+15. 听安万善吹觱篥歌
+16. 夜归鹿门山歌
+17. 庐山谣寄卢侍御虚舟
+18. 梦游天姥吟留别 
+19. 金陵酒肆留别 
+
+Proceed with processing 19 poems? (y/n): 
+Starting automated batch processing...
+Loading SDXL...
+Initializing models on device: cuda
+Available CUDA memory: 84.93 GB
+Loading base model stabilityai/stable-diffusion-xl-base-1.0...
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  43%|████▎     | 3/7 [00:00<00:00, 14.16it/s]Loading pipeline components...:  71%|███████▏  | 5/7 [00:00<00:00,  4.93it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:02<00:00,  2.18it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:02<00:00,  2.75it/s]
+Loading refiner model...
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00, 14.26it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00, 14.25it/s]
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Loading CLIP model...
+Model initialization completed
+Successfully loaded SDXL
+Loading Stable Diffusion XL Img2Img Pipeline...
+Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  43%|████▎     | 3/7 [00:00<00:01,  3.17it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:02<00:01,  1.60it/s]Loading pipeline components...:  71%|███████▏  | 5/7 [00:09<00:05,  2.63s/it]Loading pipeline components...: 100%|██████████| 7/7 [00:37<00:00,  8.04s/it]Loading pipeline components...: 100%|██████████| 7/7 [00:37<00:00,  5.32s/it]
+Loading Stable Video Diffusion Pipeline...
+Loading pipeline components...:   0%|          | 0/5 [00:00<?, ?it/s]Loading pipeline components...:  60%|██████    | 3/5 [00:00<00:00, 12.86it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00,  7.95it/s]Loading pipeline components...: 100%|██████████| 5/5 [00:00<00:00,  8.54it/s]
+
+============================================================
+PROCESSING POEM 1/19: 塞上曲·其一
+============================================================
+Successfully wrote to objective-1-temp-imgGen-metadata/塞上曲·其一/poem.txt
+
+Loaded poem: 塞上曲·其一
+Author: 王昌龄
+Content: 蝉鸣空桑林，八月萧关道。出塞入塞寒，处处黄芦草。从来幽并客，皆共沙尘老。莫学游侠儿，矜夸紫骝好。
+
+Starting poem analysis...
+
+Phase 1: Generating images for all half-stanzas...
+Processing half-stanzas:   0%|          | 0/8 [00:00<?, ?it/s]
+Processing half-stanza: 蝉鸣空桑林
+
+Debug - Starting analysis for segment: 蝉鸣空桑林
+
+Debug - Starting parallel analysis for chunk: 蝉鸣空桑林
+Debug:
+Ontology:
+lighting: sharp late summer sunlight filtering through sparse leaves
+atmosphere: lonely desolation with hypnotic drone
+color_tone: pale yellow leaves, bleached bark, muted earth tones
+Debug:
+Ontology:
+locations: [sparse mulberry woods]
+objects: [cicadas, translucent insect wings, tree trunks, pale tree bark, scattered yellowing leaves]
+Debug:
+Ontology:
+subjects: a cicada with translucent wings
+actions: clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound
+Debug - subject_action analysis result: subjects: a cicada with translucent wings
+actions: clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound
+Debug - scene_setting analysis result: locations: [sparse mulberry woods]
+objects: [cicadas, translucent insect wings, tree trunks, pale tree bark, scattered yellowing leaves]
+Debug:
+Ontology:
+time: late summer, early autumn, afternoon
+weather: clear, hot, sunny
+Debug - time_weather analysis result: time: late summer, early autumn, afternoon
+weather: clear, hot, sunny
+Debug - mood analysis result: lighting: sharp late summer sunlight filtering through sparse leaves
+atmosphere: lonely desolation with hypnotic drone
+color_tone: pale yellow leaves, bleached bark, muted earth tones
+Debug - Detailed analysis result: 
+{'text': '蝉鸣空桑林', 'subject_action': 'subjects: a cicada with translucent wings\nactions: clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound', 'scene_setting': 'locations: [sparse mulberry woods]\nobjects: [cicadas, translucent insect wings, tree trunks, pale tree bark, scattered yellowing leaves]', 'time_weather': 'time: late summer, early autumn, afternoon\nweather: clear, hot, sunny', 'mood': 'lighting: sharp late summer sunlight filtering through sparse leaves\natmosphere: lonely desolation with hypnotic drone\ncolor_tone: pale yellow leaves, bleached bark, muted earth tones'}
+Debug - Generated prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+Using model: SDXL
+Generated prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+Successfully appended to objective-1-temp-imgGen-metadata/塞上曲·其一/prompt.txt
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:08,  2.03it/s][A
+ 11%|█         | 2/19 [00:00<00:04,  3.52it/s][A
+ 16%|█▌        | 3/19 [00:00<00:04,  3.92it/s][A
+ 21%|██        | 4/19 [00:01<00:03,  4.13it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.25it/s][A
+ 32%|███▏      | 6/19 [00:01<00:03,  4.30it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.35it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.39it/s][A
+ 47%|████▋     | 9/19 [00:02<00:02,  4.43it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.45it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.45it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.46it/s][A
+ 68%|██████▊   | 13/19 [00:03<00:01,  4.47it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.48it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.48it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.47it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.47it/s][A
+ 95%|█████████▍| 18/19 [00:04<00:00,  4.47it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.46it/s][A100%|██████████| 19/19 [00:04<00:00,  4.29it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 12%|█▎        | 1/8 [00:00<00:00,  8.77it/s][A
+ 38%|███▊      | 3/8 [00:00<00:00, 12.81it/s][A
+ 62%|██████▎   | 5/8 [00:00<00:00, 13.89it/s][A
+ 88%|████████▊ | 7/8 [00:00<00:00, 14.47it/s][A100%|██████████| 8/8 [00:00<00:00, 13.95it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.25it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.29it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.30it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.34it/s][A100%|██████████| 8/8 [00:00<00:00, 15.31it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.32it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.37it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.38it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.41it/s][A100%|██████████| 8/8 [00:00<00:00, 15.39it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.11it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.28it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.37it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.40it/s][A100%|██████████| 8/8 [00:00<00:00, 15.35it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.33it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.37it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.30it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.37it/s][A100%|██████████| 8/8 [00:00<00:00, 15.35it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.31it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.34it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.91it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.74it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.59it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.54it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.52it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.52it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.50it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.48it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.47it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.48it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.48it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.48it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.47it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.47it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.47it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.47it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.46it/s][A100%|██████████| 19/19 [00:04<00:00,  4.56it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.33it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.38it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.40it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.43it/s][A100%|██████████| 8/8 [00:00<00:00, 15.41it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.33it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.37it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.40it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.43it/s][A100%|██████████| 8/8 [00:00<00:00, 15.40it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.28it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.28it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.29it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.34it/s][A100%|██████████| 8/8 [00:00<00:00, 15.32it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.28it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.35it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.38it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.46it/s][A100%|██████████| 8/8 [00:00<00:00, 15.41it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.55it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.66it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.71it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.74it/s][A100%|██████████| 8/8 [00:00<00:00, 15.71it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.29it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.33it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.92it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.75it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.63it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.56it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.54it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.52it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.50it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.49it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.48it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.48it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.48it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.45it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.44it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.45it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.46it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.45it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.44it/s][A100%|██████████| 19/19 [00:04<00:00,  4.55it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.46it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.64it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.73it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.79it/s][A100%|██████████| 8/8 [00:00<00:00, 15.73it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.48it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.62it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.70it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.74it/s][A100%|██████████| 8/8 [00:00<00:00, 15.69it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.44it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.61it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.71it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.59it/s][A100%|██████████| 8/8 [00:00<00:00, 15.59it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.52it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.68it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.75it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.69it/s][A100%|██████████| 8/8 [00:00<00:00, 15.68it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.54it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.64it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.70it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.77it/s][A100%|██████████| 8/8 [00:00<00:00, 15.72it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.32it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.34it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.93it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.75it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.64it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.57it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.53it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.52it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.50it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.48it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.47it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.47it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.47it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.48it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.48it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.47it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.46it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.46it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.46it/s][A100%|██████████| 19/19 [00:04<00:00,  4.56it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.27it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.37it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.45it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.48it/s][A100%|██████████| 8/8 [00:00<00:00, 15.44it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.38it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.47it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.53it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.44it/s][A100%|██████████| 8/8 [00:00<00:00, 15.45it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.42it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.55it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.59it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.60it/s][A100%|██████████| 8/8 [00:00<00:00, 15.57it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.50it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.58it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.46it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.52it/s][A100%|██████████| 8/8 [00:00<00:00, 15.51it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.41it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.50it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.53it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.52it/s][A100%|██████████| 8/8 [00:00<00:00, 15.51it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.30it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.35it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.93it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.75it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.62it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.57it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.53it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.53it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.52it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.49it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.47it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.46it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.47it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.47it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.46it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.45it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.45it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.46it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.45it/s][A100%|██████████| 19/19 [00:04<00:00,  4.56it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.27it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.40it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.38it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.44it/s][A100%|██████████| 8/8 [00:00<00:00, 15.41it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.38it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.60it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.73it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.78it/s][A100%|██████████| 8/8 [00:00<00:00, 15.71it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.55it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.70it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.77it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.80it/s][A100%|██████████| 8/8 [00:00<00:00, 15.76it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.50it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.59it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.64it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.71it/s][A100%|██████████| 8/8 [00:00<00:00, 15.66it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.46it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.68it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.74it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.78it/s][A100%|██████████| 8/8 [00:00<00:00, 15.73it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.36it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.35it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.92it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.74it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.60it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.55it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.53it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.52it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.50it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.46it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.45it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.45it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.46it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.44it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.43it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.44it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.44it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.45it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.45it/s][A100%|██████████| 19/19 [00:04<00:00,  4.54it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.28it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.47it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.55it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.59it/s][A100%|██████████| 8/8 [00:00<00:00, 15.54it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.18it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.41it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.52it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.57it/s][A100%|██████████| 8/8 [00:00<00:00, 15.50it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.48it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.57it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.61it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.65it/s][A100%|██████████| 8/8 [00:00<00:00, 15.62it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.29it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.46it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.48it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.50it/s][A100%|██████████| 8/8 [00:00<00:00, 15.47it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.40it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.52it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.53it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.50it/s][A100%|██████████| 8/8 [00:00<00:00, 15.49it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.28it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.32it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.90it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.74it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.61it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.56it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.52it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.51it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.51it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.49it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.48it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.48it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.47it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.47it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.45it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.45it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.45it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.46it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.45it/s][A100%|██████████| 19/19 [00:04<00:00,  4.55it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.37it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.45it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.45it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.46it/s][A100%|██████████| 8/8 [00:00<00:00, 15.44it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.43it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.47it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.48it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.49it/s][A100%|██████████| 8/8 [00:00<00:00, 15.48it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.40it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.44it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.46it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.48it/s][A100%|██████████| 8/8 [00:00<00:00, 15.46it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.39it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.46it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.47it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.42it/s][A100%|██████████| 8/8 [00:00<00:00, 15.43it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.40it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.44it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.50it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.52it/s][A100%|██████████| 8/8 [00:00<00:00, 15.49it/s]
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+Generating 5 images with prompt: featuring a cicada with translucent wings | with clinging to a tree trunk, vibrating its body to produce a loud, shrill chirping sound | in sparse mulberry woods | under clear, sharp late summer sunlight filtering through sparse leaves | creating lonely desolation with hypnotic drone atmosphere | in pale yellow leaves | RTX realism with ray tracing, traditional China
+
+  0%|          | 0/19 [00:00<?, ?it/s][A
+  5%|▌         | 1/19 [00:00<00:02,  7.26it/s][A
+ 11%|█         | 2/19 [00:00<00:03,  5.32it/s][A
+ 16%|█▌        | 3/19 [00:00<00:03,  4.90it/s][A
+ 21%|██        | 4/19 [00:00<00:03,  4.73it/s][A
+ 26%|██▋       | 5/19 [00:01<00:03,  4.61it/s][A
+ 32%|███▏      | 6/19 [00:01<00:02,  4.56it/s][A
+ 37%|███▋      | 7/19 [00:01<00:02,  4.53it/s][A
+ 42%|████▏     | 8/19 [00:01<00:02,  4.51it/s][A
+ 47%|████▋     | 9/19 [00:01<00:02,  4.49it/s][A
+ 53%|█████▎    | 10/19 [00:02<00:02,  4.47it/s][A
+ 58%|█████▊    | 11/19 [00:02<00:01,  4.46it/s][A
+ 63%|██████▎   | 12/19 [00:02<00:01,  4.45it/s][A
+ 68%|██████▊   | 13/19 [00:02<00:01,  4.45it/s][A
+ 74%|███████▎  | 14/19 [00:03<00:01,  4.46it/s][A
+ 79%|███████▉  | 15/19 [00:03<00:00,  4.45it/s][A
+ 84%|████████▍ | 16/19 [00:03<00:00,  4.45it/s][A
+ 89%|████████▉ | 17/19 [00:03<00:00,  4.46it/s][A
+ 95%|█████████▍| 18/19 [00:03<00:00,  4.46it/s][A
+100%|██████████| 19/19 [00:04<00:00,  4.45it/s][A100%|██████████| 19/19 [00:04<00:00,  4.55it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.52it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.60it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.65it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.69it/s][A100%|██████████| 8/8 [00:00<00:00, 15.65it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.43it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.49it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.50it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.53it/s][A100%|██████████| 8/8 [00:00<00:00, 15.51it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.45it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.53it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.61it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.62it/s][A100%|██████████| 8/8 [00:00<00:00, 15.59it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.44it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.54it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.60it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.65it/s][A100%|██████████| 8/8 [00:00<00:00, 15.61it/s]
+
+  0%|          | 0/8 [00:00<?, ?it/s][A
+ 25%|██▌       | 2/8 [00:00<00:00, 15.47it/s][A
+ 50%|█████     | 4/8 [00:00<00:00, 15.55it/s][A
+ 75%|███████▌  | 6/8 [00:00<00:00, 15.62it/s][A
+100%|██████████| 8/8 [00:00<00:00, 15.68it/s][A100%|██████████| 8/8 [00:00<00:00, 15.63it/s]
+Processing half-stanzas:  12%|█▎        | 1/8 [03:00<21:02, 180.43s/it]

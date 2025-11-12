@@ -1,0 +1,59 @@
+/var/spool/slurmd/job07390/slurm_script: line 24: cd: $'.\nPrototype': No such file or directory
+/var/spool/slurmd/job07390/slurm_script: line 28: module: command not found
+/var/spool/slurmd/job07390/slurm_script: line 29: module: command not found
+/var/spool/slurmd/job07390/slurm_script: line 30: module: command not found
+
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.0.1 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "<string>", line 2, in <module>
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/torch/__init__.py", line 1382, in <module>
+    from .functional import *  # noqa: F403
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/torch/functional.py", line 7, in <module>
+    import torch.nn.functional as F
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/torch/nn/__init__.py", line 1, in <module>
+    from .modules import *  # noqa: F403
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/torch/nn/modules/__init__.py", line 35, in <module>
+    from .transformer import TransformerEncoder, TransformerDecoder, \
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/torch/nn/modules/transformer.py", line 20, in <module>
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/torch/nn/modules/transformer.py:20: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at /opt/conda/conda-bld/pytorch_1695392022560/work/torch/csrc/utils/tensor_numpy.cpp:84.)
+  device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+diffusers 0.25.1 requires huggingface-hub>=0.20.2, but you have huggingface-hub 0.19.4 which is incompatible.
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+diffusers 0.25.1 requires huggingface-hub>=0.20.2, but you have huggingface-hub 0.19.4 which is incompatible.
+Traceback (most recent call last):
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/diffusers/utils/import_utils.py", line 710, in _get_module
+    return importlib.import_module("." + module_name, self.__name__)
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/diffusers/pipelines/pipeline_utils.py", line 38, in <module>
+    from huggingface_hub.utils import OfflineModeIsEnabled, validate_hf_hub_args
+ImportError: cannot import name 'OfflineModeIsEnabled' from 'huggingface_hub.utils' (/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/huggingface_hub/utils/__init__.py)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+  File "<frozen importlib._bootstrap>", line 1055, in _handle_fromlist
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/diffusers/utils/import_utils.py", line 701, in __getattr__
+    value = getattr(module, name)
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/diffusers/utils/import_utils.py", line 700, in __getattr__
+    module = self._get_module(self._class_to_module[name])
+  File "/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/diffusers/utils/import_utils.py", line 712, in _get_module
+    raise RuntimeError(
+RuntimeError: Failed to import diffusers.pipelines.pipeline_utils because of the following error (look up to see its traceback):
+cannot import name 'OfflineModeIsEnabled' from 'huggingface_hub.utils' (/userhome/cs3/adelalau/anaconda3/envs/poem_vidgen_stable/lib/python3.9/site-packages/huggingface_hub/utils/__init__.py)
