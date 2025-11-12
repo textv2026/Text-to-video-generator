@@ -123,7 +123,7 @@ def load_poem_from_json(json_file_path, poem_title):
         return None
 
 class EnhancedPoemAnalyzer:
-    def __init__(self, api_key="sk-0aedbcb9ef494f62a69b74ef3121efc8"):
+    def __init__(self, api_key="YOUR_API_KEY_HERE"):
         self.client = OpenAI(
             api_key=api_key,
             base_url="https://api.deepseek.com"
