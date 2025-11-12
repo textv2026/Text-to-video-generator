@@ -1,0 +1,1462 @@
+# Combined Poem-to-Video Generation Pipeline - Automated Version
+import gc
+import torch
+import json
+import re
+import time
+import traceback
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
+from diffusers import DiffusionPipeline, EulerDiscreteScheduler
+from diffusers import StableDiffusionXLImg2ImgPipeline, StableVideoDiffusionPipeline
+from diffusers.utils import load_image, export_to_video
+from transformers import CLIPProcessor, CLIPModel
+import torch.nn.functional as F
+from PIL import Image, ImageDraw, ImageFont
+from openai import OpenAI  # Changed from zhipuai import ZhipuAI
+from bayes_opt import BayesianOptimization
+import os
+import subprocess
+import shutil
+import tempfile
+import urllib.request
+
+# Define models to compare
+MODELS_TO_COMPARE = {
+    "SDXL": "stabilityai/stable-diffusion-xl-base-1.0"
+}
+
+def clear_gpu_memory():
+    """Clear GPU memory and cache."""
+    gc.collect()
+    torch.cuda.empty_cache()
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+
+def get_available_poems(json_file_path):
+    """Get list of all available poem titles from the database"""
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        poem_titles = [poem['title'] for poem in data['poems']]
+        print(f"\nFound {len(poem_titles)} poems in database:")
+        for i, title in enumerate(poem_titles, 1):
+            print(f"{i:2d}. {title}")
+        
+        return poem_titles
+    except Exception as e:
+        print(f"Error loading poems database: {e}")
+        return []
+
+def get_completed_poems(output_dir="objective-1-generatedVid"):
+    """Check which poems have already been processed by looking for final videos"""
+    completed_poems = []
+    
+    if not os.path.exists(output_dir):
+        print(f"Output directory {output_dir} doesn't exist yet.")
+        return completed_poems
+    
+    try:
+        files = os.listdir(output_dir)
+        for file in files:
+            if file.endswith('_final_video.mp4'):
+                # Extract poem title from filename
+                poem_title = file.replace('_final_video.mp4', '')
+                completed_poems.append(poem_title)
+        
+        if completed_poems:
+            print(f"\nFound {len(completed_poems)} already completed poems:")
+            for i, title in enumerate(completed_poems, 1):
+                print(f"{i:2d}. {title}")
+        else:
+            print("\nNo completed poems found.")
+            
+        return completed_poems
+    except Exception as e:
+        print(f"Error checking completed poems: {e}")
+        return []
+
+def get_poems_to_process(json_file_path, output_dir="objective-1-generatedVid"):
+    """Get list of poems that need to be processed (available - completed)"""
+    available_poems = get_available_poems(json_file_path)
+    completed_poems = get_completed_poems(output_dir)
+    
+    # Filter out completed poems
+    poems_to_process = [poem for poem in available_poems if poem not in completed_poems]
+    
+    print(f"\n{'='*60}")
+    print(f"PROCESSING SUMMARY:")
+    print(f"{'='*60}")
+    print(f"Total available poems: {len(available_poems)}")
+    print(f"Already completed: {len(completed_poems)}")
+    print(f"Remaining to process: {len(poems_to_process)}")
+    
+    if poems_to_process:
+        print(f"\nPoems to be processed:")
+        for i, title in enumerate(poems_to_process, 1):
+            print(f"{i:2d}. {title}")
+    else:
+        print("\nAll poems have been processed!")
+    
+    return poems_to_process
+
+def load_poem_from_json(json_file_path, poem_title):
+    """Load a specific poem from the JSON file."""
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        for poem in data['poems']:
+            if poem['title'] == poem_title:
+                return poem
+
+        print(f"Poem '{poem_title}' not found in the database.")
+        return None
+
+    except Exception as e:
+        print(f"Error loading poem data: {str(e)}")
+        return None
+
+class EnhancedPoemAnalyzer:
+    def __init__(self, api_key="sk-0aedbcb9ef494f62a69b74ef3121efc8"):
+        self.client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.deepseek.com"
+        )
+        self.chunk_cache = {}
+
+    def translate_to_english(self, chinese_text):
+        prompt = f"""Please translate the following Chinese text to English, maintaining the visual and descriptive nature of the content:
+
+        Chinese text:
+        {chinese_text}
+
+        Requirements:
+        1. Translate to natural, fluent English
+        2. Preserve all visual descriptions and imagery
+        3. Keep any technical or specific terms
+        4. Maintain the original structure where applicable
+        """
+
+        response = self.client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        return response.choices[0].message.content.strip()
+
+    def interpret_cultural_terms(self, text, context):
+        prompt = f"""请分析这句诗中的专有名词或文化意象，将其转换为具体的视觉描述：
+
+        原诗上下文：
+        {context}
+
+        需要分析的句子：
+        {text}
+
+        请识别所有的专有名词、人物称谓或文化意象，并给出具体的视觉描述。
+        格式要求：
+        1. 每个词一行
+        2. 用 "词：视觉描述" 的格式
+        3. 描述必须是具体的、可视化的，避免抽象概念
+        4. 描述要符合诗歌语境
+        5. 请直接用英文描述
+
+        示例：
+        若"王孙"在此诗中表达隐居的文人，应描述为"a scholarly man in traditional robes meditating in nature"
+        若"渔父"出现，应描述为"an old fisherman in simple clothes on a wooden boat"
+        """
+
+        response = self.client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        interpretations = {}
+        for line in response.choices[0].message.content.strip().split('\n'):
+            if '：' in line:
+                term, desc = line.split('：', 1)
+                interpretations[term.strip()] = desc.strip()
+
+        interpreted_text = text
+        for term, desc in interpretations.items():
+            interpreted_text = interpreted_text.replace(term, desc)
+
+        return interpreted_text
+
+    def get_poem_understanding(self, full_poem):
+        study_prompt = f"""请从视觉角度分析这首诗的整体意境、场景和情感，重点描述：
+        1. 主要场景和环境特征
+        2. 光线和时间的变化
+        3. 人物的动作和状态
+        4. 整体氛围和情感基调
+
+        诗文：
+        {full_poem}
+
+        请用英文回答，使用具体的视觉语言描述，避免抽象概念。"""
+
+        response = self.client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "user", "content": study_prompt}]
+        )
+
+        return response.choices[0].message.content
+
+    def analyze_chunk_detail(self, chunk, category, context_dict):
+        cache_key = f"{chunk}_{category}"
+        if cache_key in self.chunk_cache:
+            return self.chunk_cache[cache_key]
+
+        # Get results from other analysis functions
+        english_translation = self.translate_to_english(chunk)
+        interpreted_chunk = self.interpret_cultural_terms(chunk, context_dict['full_poem'])
+        poem_understanding = self.get_poem_understanding(context_dict['full_poem'])
+        previous_chunk = context_dict.get('previous_chunk', '')
+
+        prompts = {
+            "subject_action": f"""
+            Previous conversations:
+            {english_translation}
+            {interpreted_chunk}
+            {poem_understanding}
+
+            Analyze the subjects and their actions in this line/segment of poetry.
+
+            The line to be focused on: "{chunk}",
+            and its previous line: "{previous_chunk}"
+
+            Return in this exact format. IT MUST ALIGN WITH THE MEANING OF THAT LINE!!!!!!!!!
+            subjects: [concrete description of each person/animal/living being, their clothing/appearance if mentioned]
+            actions: [specific descriptions of actions or emotional states]
+
+            Requirements:
+            - Your analysis must align with:
+              * The English translation provided above
+              * The cultural interpretations provided above
+              * The overall poem understanding provided above
+            - For subjects, always include full description
+            - If no explicit subject in current line, use the subject from previous line
+            - If previous line has subject "孤鸿" (lonely goose), current line should use "the lonely goose" as subject
+            - All actions must be visually concrete (e.g., for "不敢顾", show "lifting its wings away from")
+            - Avoid literary descriptions and Chinese terms
+            - If this is the first line ({context_dict['chunk_index'] == 0}), only include subjects explicitly mentioned
+            - If subject is not further described in terms of appearance or clothing in this or previous line,
+              do not mention something like "not further describe..." or "not explicitly stated..." or "imply/implies..." or "not further described in terms of..." in final output
+            - Again if something is not explicitly describe, PLEASE do not let us know in the final output.
+              For example, "featuring A character - not explicitly described in terms of appearance or clothing"
+              Do not mention "not explicitly described in terms of appearance or clothing"
+            - Do not put explanations or interpretations in brackets
+            - List each subject and action exactly once
+            - Use concise, visual descriptions
+            - For temporal descriptions (like future events), describe the current state
+            - For questions about return (like '归不归'), describe as 'contemplating return'
+            - Always include emotional subjects even if implied
+            - For "得无金丸惧": must include "the birds" as subjects and "showing fear of golden arrows" as action
+            - For lines expressing fear/anxiety: translate emotional states into visible actions
+            - If current line has no explicit subject, carry forward subjects from previous line
+            - If previous line mentioned birds, keep them as subjects
+            - Convert abstract feelings into visible actions or poses
+            - For questions about fear (like '得无金丸惧'), describe as 'showing visible fear of'
+            """,
+
+            "scene_setting": f"""
+            Previous conversations:
+            {english_translation}
+            {interpreted_chunk}
+            {poem_understanding}
+
+            Analyze the scene and environmental elements in this line: "{chunk}"
+
+            Please return in this format. IT MUST ALIGN WITH THE MEANING OF THAT LINE!!!!!!!!!
+            locations: [specific scene locations]
+            objects: [specific physical objects, flora, fauna, celestial elements, architectural elements, weapons, arrows, or/and threats mentioned]
+
+            Requirements:
+            - Your analysis must align with:
+              * The English translation provided above
+              * The cultural interpretations provided above
+              * The overall poem understanding provided above
+            - Descriptions must be concrete and visual
+            - Avoid display of Chinese in final output
+            - All physical elements must be included! (e.g. 举杯邀明月 will have cup and moon; 巢在三珠树 will have nests on branches, three pearl trees)
+            - Take note of the amounts too (e.g. three birds)
+            - Be extremely specific about objects (e.g., "three pearl trees" rather than just "trees")
+            - No explanations in the brackets
+            - List each element exactly once
+            - Use concise, visual terms
+            - Include seasonal elements (e.g., spring grass should be listed as an object)
+            - Include temporal indicators as physical manifestations
+            - For "金丸" (golden pellets/arrows): must be listed as physical objects
+            - Include all mentioned or implied physical threats
+            - List specific types of weapons or projectiles
+            """,
+
+            "time_weather": f"""
+            Previous conversations:
+            {english_translation}
+            {interpreted_chunk}
+            {poem_understanding}
+
+            Analyze the time and weather elements in this line: "{chunk}"
+
+            Please return in this format. IT MUST ALIGN WITH THE MEANING OF THAT LINE!!!!!!!!!
+            time: [specific time, e.g., sunset, dawn]
+            weather: [specific weather conditions]
+
+            Requirements:
+            - Your analysis must align with:
+              * The English translation provided above
+              * The cultural interpretations provided above
+              * The overall poem understanding provided above
+            - Use commonly recognized natural phenomena
+            - Avoid display of Chinese in final output
+            - If there is a moon mentioned, set time to night
+            - No explanations in the brackets
+            - List each element exactly once
+            - Use concise, visual terms
+            - Include seasonal timeframes
+            - Include future time references as present atmospheric conditions
+            """,
+
+            "mood": f"""
+            Previous conversations:
+            {english_translation}
+            {interpreted_chunk}
+            {poem_understanding}
+
+            Analyze the visual atmosphere and emotional elements in this line: "{chunk}"
+
+            Please return in this format. IT MUST ALIGN WITH THE MEANING OF THAT LINE!!!!!!!!!
+            lighting: [specific lighting effects]
+            atmosphere: [specific visual mood]
+            color_tone: [main color tones]
+
+            Requirements:
+            - Your analysis must align with:
+              * The English translation provided above
+              * The cultural interpretations provided above
+              * The overall poem understanding provided above
+            - All descriptions should be directly usable for image generation
+            - Avoid display of Chinese in final output
+            - No explanations in the brackets
+            - List each element exactly once
+            - Use concise, visual terms
+            - Capture emotional uncertainty in visual terms
+            - Include seasonal color palettes
+            - Transform abstract concepts into visual metaphors
+            """
+        }
+
+        response = self.client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[{"role": "user", "content": prompts[category]}]
+        )
+
+        result = response.choices[0].message.content.strip()
+        self.chunk_cache[cache_key] = result
+        print(f"Debug:\nOntology:\n{result}")
+        return result
+
+    def analyze_chunk_parallel(self, chunk, context_dict):
+        try:
+            print(f"\nDebug - Starting parallel analysis for chunk: {chunk}")
+
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                futures = {
+                    "subject_action": executor.submit(self.analyze_chunk_detail, chunk, "subject_action", context_dict),
+                    "scene_setting": executor.submit(self.analyze_chunk_detail, chunk, "scene_setting", context_dict),
+                    "time_weather": executor.submit(self.analyze_chunk_detail, chunk, "time_weather", context_dict),
+                    "mood": executor.submit(self.analyze_chunk_detail, chunk, "mood", context_dict)
+                }
+
+                results = {
+                    "text": chunk,
+                }
+
+                # Get results and check each one
+                for category, future in futures.items():
+                    try:
+                        result = future.result(timeout=60)  # Add timeout
+                        print(f"Debug - {category} analysis result: {result}")  # Debug print
+                        if result:
+                            results[category] = result
+                        else:
+                            print(f"Warning: Empty result for {category}")
+                    except Exception as e:
+                        print(f"Error getting result for {category}: {e}")
+                        results[category] = ""
+
+                if not any(key in results for key in ['subject_action', 'scene_setting', 'time_weather', 'mood']):
+                    print("Warning: No analysis results obtained")
+
+                return results
+
+        except Exception as e:
+            print(f"Error in analyze_chunk_parallel: {str(e)}")
+            traceback.print_exc()
+            return {"text": chunk}
+
+    def pack_chunk_to_prompt(self, chunk_analysis, overall_understanding, context_dict=None):
+        elements = {
+            'primary_subjects': [],
+            'secondary_subjects': [],
+            'actions': [],
+            'objects': [],
+            'environment': [],
+            'lighting': [],
+            'atmosphere': [],
+            'color_tone': [],
+            'weather': [],
+            'time': [],
+            'style': ['RTX realism with ray tracing', 'traditional China']
+        }
+
+        # Parse subject_action
+        if 'subject_action' in chunk_analysis:
+            content = chunk_analysis['subject_action']
+            if 'subjects:' in content and 'actions:' in content:
+                lines = content.split('\n')
+                for line in lines:
+                    if line.startswith('subjects:'):
+                        subjects = line.replace('subjects:', '').strip()
+                        elements['primary_subjects'].append(subjects)
+                    elif line.startswith('actions:'):
+                        actions = line.replace('actions:', '').strip()
+                        elements['actions'].append(actions)
+
+        # Parse scene_setting
+        if 'scene_setting' in chunk_analysis:
+            content = chunk_analysis['scene_setting']
+            if 'locations:' in content and 'objects:' in content:
+                first_part = content.split('\n\n')[0]
+                for line in first_part.split('\n'):
+                    if line.startswith('locations:'):
+                        locations = line.replace('locations:', '').strip()
+                        locations = locations.strip('[]').split(',')
+                        elements['environment'].extend([loc.strip() for loc in locations])
+                    elif line.startswith('objects:'):
+                        objects = line.replace('objects:', '').strip()
+                        objects = objects.strip('[]').split(',')
+                        elements['objects'].extend([obj.strip() for obj in objects])
+
+        # Parse time_weather
+        if 'time_weather' in chunk_analysis:
+            content = chunk_analysis['time_weather']
+            for line in content.split('\n'):
+                if line.startswith('time:'):
+                    time = line.replace('time:', '').strip()
+                    elements['time'].append(time)
+                elif line.startswith('weather:'):
+                    weather = line.replace('weather:', '').strip()
+                    elements['weather'].append(weather)
+
+        # Parse mood
+        if 'mood' in chunk_analysis:
+            content = chunk_analysis['mood']
+            for line in content.split('\n'):
+                if line.startswith('lighting:'):
+                    lighting = line.replace('lighting:', '').strip()
+                    elements['lighting'].append(lighting)
+                elif line.startswith('atmosphere:'):
+                    atmosphere = line.replace('atmosphere:', '').strip()
+                    elements['atmosphere'].append(atmosphere)
+                elif line.startswith('color_tone:'):
+                    color_tone = line.replace('color_tone:', '').strip()
+                    elements['color_tone'].append(color_tone)
+
+        # Build the prompt with more concise descriptions
+        prompt_parts = []
+
+        if elements['primary_subjects']:
+            subjects = elements['primary_subjects'][0]
+            if '\n' in subjects:
+                subjects = subjects.split('\n')[0]
+            prompt_parts.append(f"featuring {subjects}")
+
+        if elements['actions']:
+            actions = elements['actions'][0]
+            if '\n' in actions:
+                actions = actions.split('\n')[0]
+            prompt_parts.append(f"with {actions}")
+
+        if elements['environment']:
+            env = elements['environment'][0].split(',')[0]
+            prompt_parts.append(f"in {env}")
+
+        if elements['weather'] or elements['lighting']:
+            light_weather = []
+            if elements['weather']:
+                weather = elements['weather'][0].split(',')[0]
+                light_weather.append(weather)
+            if elements['lighting']:
+                lighting = elements['lighting'][0].split(',')[0]
+                light_weather.append(lighting)
+            if light_weather:
+                prompt_parts.append(f"under {', '.join(light_weather)}")
+
+        if elements['atmosphere']:
+            atmosphere = elements['atmosphere'][0].split(',')[0]
+            prompt_parts.append(f"creating {atmosphere} atmosphere")
+
+        if elements['color_tone']:
+            color = elements['color_tone'][0].split(',')[0]
+            prompt_parts.append(f"in {color}")
+
+        prompt_parts.append(', '.join(elements['style']))
+
+        return ' | '.join(filter(None, prompt_parts))
+
+    def get_contextual_analysis(self, full_poem, segment, context_dict):
+        try:
+            print(f"\nDebug - Starting analysis for segment: {segment}")
+
+            context_dict['current_chunk'] = segment
+            overall_understanding = self.get_poem_understanding(full_poem)
+            detailed_analysis = self.analyze_chunk_parallel(segment, context_dict)
+            print(f"Debug - Detailed analysis result: \n{detailed_analysis}")
+
+            if not detailed_analysis or not any(key in detailed_analysis for key in ['subject_action', 'scene_setting', 'time_weather', 'mood']):
+                print(f"Warning: Incomplete analysis for segment: {segment}")
+                print(f"Analysis contents: {detailed_analysis}")
+
+            compact_prompt = self.pack_chunk_to_prompt(
+                detailed_analysis,
+                overall_understanding,
+                context_dict
+            )
+            print(f"Debug - Generated prompt: {compact_prompt}")
+
+            return {
+                "original_poem": full_poem,
+                "translated_poem": self.translate_to_english(full_poem),
+                "overall_understanding": overall_understanding,
+                "detailed_analysis": detailed_analysis,
+                "compact_prompt": compact_prompt
+            }
+        except Exception as e:
+            print(f"Error in get_contextual_analysis: {str(e)}")
+            traceback.print_exc()
+            return None
+
+class BayesianStableDiffusion:
+    def __init__(self, model_id="stabilityai/stable-diffusion-xl-base-1.0", num_inference_steps=50,
+                 clip_model_name="openai/clip-vit-base-patch32"):
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model_id = model_id
+        self.refiner_id = "stabilityai/stable-diffusion-xl-refiner-1.0"
+
+        print(f"Initializing models on device: {self.device}")
+        if torch.cuda.is_available():
+            print(f"Available CUDA memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
+            clear_gpu_memory()
+
+        try:
+            print(f"Loading base model {model_id}...")
+            self.base = DiffusionPipeline.from_pretrained(
+                model_id,
+                torch_dtype=torch.float16,
+                variant="fp16",
+                use_safetensors=True
+            ).to(self.device)
+
+            print(f"Loading refiner model...")
+            self.refiner = DiffusionPipeline.from_pretrained(
+                self.refiner_id,
+                torch_dtype=torch.float16,
+                variant="fp16",
+                use_safetensors=True,
+                text_encoder_2=self.base.text_encoder_2,
+                vae=self.base.vae,
+            ).to(self.device)
+
+            self.base.scheduler = EulerDiscreteScheduler.from_config(
+                self.base.scheduler.config,
+                use_karras_sigmas=True
+            )
+            self.refiner.scheduler = EulerDiscreteScheduler.from_config(
+                self.refiner.scheduler.config,
+                use_karras_sigmas=True
+            )
+
+            for pipe in [self.base, self.refiner]:
+                try:
+                    pipe.enable_attention_slicing(slice_size="auto")
+                    pipe.enable_vae_slicing()
+                    pipe.enable_xformers_memory_efficient_attention()
+                except Exception as e:
+                    print(f"Warning: Could not enable some optimizations: {e}")
+
+            print("Loading CLIP model...")
+            self.num_inference_steps = num_inference_steps
+            self.clip_processor = CLIPProcessor.from_pretrained(clip_model_name)
+            self.clip_model = CLIPModel.from_pretrained(clip_model_name).to(self.device)
+            self.clip_model.eval()
+
+            print("Model initialization completed")
+
+        except Exception as e:
+            print(f"Error initializing model: {str(e)}")
+            traceback.print_exc()
+            raise
+
+    def generate_images(self, prompt, negative_prompt="", num_samples=5, guidance_scale=9, temperature=1.0):
+        try:
+            clear_gpu_memory()
+
+            print(f"Generating {num_samples} images with prompt: {prompt}")
+
+            base_images = self.base(
+                prompt=[prompt] * num_samples,
+                negative_prompt=[negative_prompt] * num_samples,
+                num_inference_steps=30,
+                denoising_end=0.8,
+                guidance_scale=guidance_scale,
+                width=1024,
+                height=1024,
+            ).images
+
+            refined_images = []
+            for base_image in base_images:
+                refined = self.refiner(
+                    prompt=prompt,
+                    negative_prompt=negative_prompt,
+                    image=base_image,
+                    num_inference_steps=20,
+                    denoising_start=0.8,
+                    guidance_scale=guidance_scale,
+                ).images[0]
+                refined_images.append(refined)
+
+            if not refined_images:
+                raise ValueError("No images were generated")
+
+            images = [img.convert('RGB') if isinstance(img, Image.Image) else Image.fromarray(img).convert('RGB')
+                    for img in refined_images]
+
+            likelihoods = self.compute_clip_likelihoods(images, prompt)
+
+            clear_gpu_memory()
+            return images, likelihoods
+
+        except Exception as e:
+            print(f"Error in generate_images: {str(e)}")
+            traceback.print_exc()
+            return [], np.array([])
+
+    def compute_clip_likelihoods(self, images, prompt):
+        try:
+            inputs = self.clip_processor(
+                text=[prompt] * len(images),
+                images=images,
+                return_tensors="pt",
+                padding=True
+            ).to(self.device)
+
+            with torch.no_grad():
+                outputs = self.clip_model(**inputs)
+                image_embeds = F.normalize(outputs.image_embeds, p=2, dim=1)
+                text_embeds = F.normalize(outputs.text_embeds, p=2, dim=1)
+                cosine_similarity = F.cosine_similarity(image_embeds, text_embeds, dim=1)
+                likelihoods = (cosine_similarity + 1) / 2
+            return likelihoods.cpu().numpy()
+
+        except Exception as e:
+            print(f"Error in compute_clip_likelihoods: {str(e)}")
+            traceback.print_exc()
+            return np.array([0.0] * len(images))
+
+    def compute_mean_and_variance(self, images):
+        if isinstance(images[0], Image.Image):
+            images = [np.array(img) for img in images]
+        images_array = np.array(images) / 255.0
+        mean_image = np.mean(images_array, axis=0)
+        variance_image = np.var(images_array, axis=0)
+        return mean_image, variance_image
+
+class ImageToVideoPipeline:
+    def __init__(self, device="cuda"):
+        self.device = device
+
+        print("Loading Stable Diffusion XL Img2Img Pipeline...")
+        self.pipe = StableDiffusionXLImg2ImgPipeline.from_pretrained(
+            "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16
+        )
+        self.pipe.to(self.device)
+
+        print("Loading Stable Video Diffusion Pipeline...")
+        self.svd_pipe = StableVideoDiffusionPipeline.from_pretrained(
+            "stabilityai/stable-video-diffusion-img2vid-xt",
+            torch_dtype=torch.float16,
+            variant="fp16",
+        )
+        self.svd_pipe.enable_model_cpu_offload()
+
+    @staticmethod
+    def preprocess_image(image_path):
+        if isinstance(image_path, str):
+            image = Image.open(image_path)
+        else:
+            image = image_path
+
+        image = image.convert("RGB")
+        image = image.resize((1024, 1024), Image.Resampling.LANCZOS)
+        return image
+
+    def generate_transition_frames(self, image_a_path, image_b_path, prompt_a, prompt_b, output_dir, num_frames=30):
+        image_a = self.preprocess_image(image_a_path)
+        image_b = self.preprocess_image(image_b_path)
+        os.makedirs(output_dir, exist_ok=True)
+
+        prompt_a = prompt_a or "an image"
+        prompt_b = prompt_b or "another image"
+
+        frame_paths = []
+        with torch.no_grad():
+            print("Generating enhanced source image...")
+            image_a_enhanced = self.pipe(
+                image=image_a,
+                prompt=prompt_a,
+                strength=0.3,
+                guidance_scale=7.5,
+                num_inference_steps=50,
+            ).images[0]
+
+            print("Generating enhanced target image...")
+            image_b_enhanced = self.pipe(
+                image=image_b,
+                prompt=prompt_b,
+                strength=0.3,
+                guidance_scale=7.5,
+                num_inference_steps=50,
+            ).images[0]
+
+            for i in range(num_frames):
+                t = i / (num_frames - 1) if num_frames > 1 else 0
+
+                if i < num_frames / 2:
+                    blend_factor = t * 2
+                    current_prompt = f"{prompt_a}, {int(blend_factor * 100)}% transitioning to {prompt_b}"
+                    base_image = image_a_enhanced
+                else:
+                    blend_factor = (t - 0.5) * 2
+                    current_prompt = f"{int((1-blend_factor) * 100)}% {prompt_a}, transitioning to {prompt_b}"
+                    base_image = Image.blend(image_a_enhanced, image_b_enhanced, blend_factor)
+
+                strength = 0.3 + 0.4 * (1 - abs(2 * t - 1))
+
+                print(f"Generating transition frame {i+1}/{num_frames} with blend {t:.2f}...")
+                result = self.pipe(
+                    image=base_image,
+                    prompt=current_prompt,
+                    strength=float(strength),
+                    guidance_scale=7.5,
+                    num_inference_steps=50,
+                ).images[0]
+
+                frame_path = os.path.join(output_dir, f"transition_frame_{i+1:03d}.png")
+                result.save(frame_path)
+                frame_paths.append(frame_path)
+
+        return frame_paths
+
+    def generate_svd_video(self, image_path, output_path, subtitle, fps=7):
+        print(f"Generating SVD video for {image_path}...")
+        image = load_image(image_path)
+        image = image.resize((1024, 576))
+
+        generator = torch.manual_seed(42)
+        frames = self.svd_pipe(
+            image, decode_chunk_size=8, generator=generator, motion_bucket_id=180, noise_aug_strength=0.1
+        ).frames[0]
+
+        temp_dir = tempfile.mkdtemp()
+        try:
+            for i, frame in enumerate(frames):
+                frame_path = os.path.join(temp_dir, f"frame_{i:04d}.png")
+                frame_img = frame
+
+                draw = ImageDraw.Draw(frame_img)
+                font_size = 120
+                font = None
+
+                font_paths = [
+                    '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
+                    '/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc',
+                    '/usr/share/fonts/adobe-source-han-sans-cn/SourceHanSansCN-Bold.otf',
+                    '/System/Library/Fonts/PingFang.ttc',
+                    'C:/Windows/Fonts/msyh.ttc',
+                    'C:/Windows/Fonts/simsun.ttc',
+                    'NotoSansSC-Bold.otf'
+                ]
+
+                for font_path in font_paths:
+                    try:
+                        if os.path.exists(font_path):
+                            font = ImageFont.truetype(font_path, font_size)
+                            break
+                    except Exception:
+                        continue
+
+                if font is None:
+                    try:
+                        font_path = 'NotoSansSC-Bold.otf'
+                        if not os.path.exists(font_path):
+                            print("Downloading Noto Sans SC font...")
+                            font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/SimplifiedChinese/NotoSansSC-Bold.otf"
+                            urllib.request.urlretrieve(font_url, font_path)
+                        font = ImageFont.truetype(font_path, font_size)
+                    except Exception:
+                        font = ImageFont.load_default()
+                        font_size = 40
+
+                text_bbox = draw.textbbox((0, 0), subtitle, font=font)
+                text_width = text_bbox[2] - text_bbox[0]
+                text_height = text_bbox[3] - text_bbox[1]
+
+                x = (frame_img.width - text_width) // 2
+                y = frame_img.height - text_height - 50
+
+                outline_color = (0, 0, 0)
+                outline_width = 4
+                for dx in range(-outline_width, outline_width + 1):
+                    for dy in range(-outline_width, outline_width + 1):
+                        if dx*dx + dy*dy <= outline_width*outline_width:
+                            draw.text((x + dx, y + dy), subtitle, font=font, fill=outline_color)
+
+                draw.text((x, y), subtitle, font=font, fill=(255, 255, 255))
+                frame_img.save(frame_path)
+
+            ffmpeg_cmd = [
+                "ffmpeg", "-y",
+                "-framerate", str(fps),
+                "-i", os.path.join(temp_dir, "frame_%04d.png"),
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv420p",
+                output_path
+            ]
+
+            subprocess.run(ffmpeg_cmd, check=True)
+
+        finally:
+            shutil.rmtree(temp_dir)
+
+    @staticmethod
+    def create_video_from_frames(frame_dir, output_video_path, subtitle="", fps=30, slow_factor=0.1):
+        if not shutil.which("ffmpeg"):
+            raise EnvironmentError("ffmpeg not found")
+
+        temp_dir = tempfile.mkdtemp()
+        try:
+            frame_files = sorted([f for f in os.listdir(frame_dir) if f.startswith("transition_frame_")])
+
+            for frame_file in frame_files:
+                input_path = os.path.join(frame_dir, frame_file)
+                output_path = os.path.join(temp_dir, frame_file)
+
+                frame = Image.open(input_path)
+
+                if subtitle:
+                    draw = ImageDraw.Draw(frame)
+                    font_size = 120
+                    font = None
+                    font_paths = [
+                        '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
+                        '/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc',
+                        '/usr/share/fonts/adobe-source-han-sans-cn/SourceHanSansCN-Bold.otf',
+                        '/System/Library/Fonts/PingFang.ttc',
+                        'C:/Windows/Fonts/msyh.ttc',
+                        'C:/Windows/Fonts/simsun.ttc',
+                        'NotoSansSC-Bold.otf'
+                    ]
+
+                    for font_path in font_paths:
+                        try:
+                            if os.path.exists(font_path):
+                                font = ImageFont.truetype(font_path, font_size)
+                                break
+                        except Exception:
+                            continue
+
+                    if font is None:
+                        try:
+                            font_path = 'NotoSansSC-Bold.otf'
+                            if not os.path.exists(font_path):
+                                print("Downloading Noto Sans SC font...")
+                                font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/SimplifiedChinese/NotoSansSC-Bold.otf"
+                                urllib.request.urlretrieve(font_url, font_path)
+                            font = ImageFont.truetype(font_path, font_size)
+                        except Exception:
+                            font = ImageFont.load_default()
+                            font_size = 40
+
+                    text_bbox = draw.textbbox((0, 0), subtitle, font=font)
+                    text_width = text_bbox[2] - text_bbox[0]
+                    text_height = text_bbox[3] - text_bbox[1]
+                    x = (frame.width - text_width) // 2
+                    y = frame.height - text_height - 50
+
+                    outline_color = (0, 0, 0)
+                    outline_width = 4
+                    for dx in range(-outline_width, outline_width + 1):
+                        for dy in range(-outline_width, outline_width + 1):
+                            if dx*dx + dy*dy <= outline_width*outline_width:
+                                draw.text((x + dx, y + dy), subtitle, font=font, fill=outline_color)
+
+                    draw.text((x, y), subtitle, font=font, fill=(255, 255, 255))
+
+                frame.save(output_path)
+
+            ffmpeg_cmd = [
+                "ffmpeg", "-y",
+                "-framerate", str(fps),
+                "-i", os.path.join(temp_dir, "transition_frame_%03d.png"),
+                "-vf", f"setpts={1/slow_factor}*PTS",
+                "-vcodec", "libx264",
+                "-crf", "25",
+                "-pix_fmt", "yuv420p",
+                output_video_path
+            ]
+
+            subprocess.run(ffmpeg_cmd, check=True)
+
+        finally:
+            shutil.rmtree(temp_dir)
+
+    @staticmethod
+    def combine_videos(video_paths, final_output_path):
+        if not shutil.which("ffmpeg"):
+            raise EnvironmentError("ffmpeg not found")
+
+        if len(video_paths) > 0:
+            last_video = video_paths[-1]
+            video_paths.append(last_video)
+            video_paths.append(last_video)
+
+        input_file = "video_list.txt"
+        with open(input_file, "w") as f:
+            for video_path in video_paths:
+                f.write(f"file '{video_path}'\n")
+
+        ffmpeg_cmd = [
+            "ffmpeg",
+            "-y",
+            "-f", "concat",
+            "-safe", "0",
+            "-i", input_file,
+            "-c", "copy",
+            final_output_path
+        ]
+
+        try:
+            subprocess.run(ffmpeg_cmd, check=True)
+        finally:
+            if os.path.exists(input_file):
+                os.remove(input_file)
+
+class ModelComparisonExperiment:
+    def __init__(self):
+        self.models = {}
+        self.results = {}
+        self.best_images_sequence = {}
+        self.poem_analyzer = EnhancedPoemAnalyzer()
+        self.load_models()
+
+    def load_models(self):
+        for model_name, model_id in MODELS_TO_COMPARE.items():
+            print(f"Loading {model_name}...")
+            try:
+                self.models[model_name] = BayesianStableDiffusion(
+                    model_id=model_id,
+                    num_inference_steps=50
+                )
+                print(f"Successfully loaded {model_name}")
+            except Exception as e:
+                print(f"Error loading {model_name}: {str(e)}")
+
+    def run_comparison(self, poem, poem_title="unknown"):
+        print("\nStarting poem analysis...")
+
+        overall_analysis = self.poem_analyzer.get_poem_understanding(poem)
+        chunks = [chunk.strip() for chunk in re.split('[，。？！]', poem) if chunk.strip()]
+
+        results = {
+            model_name: {
+                'images': [],
+                'scores': [],
+                'generation_times': [],
+                'clip_scores': [],
+                'optimization_results': [],
+                'best_images': [],
+                'prompts': [],
+                'chunk_texts': []
+            } for model_name in self.models.keys()
+        }
+
+        chunk_contexts = {}
+        for i, chunk in enumerate(chunks):
+            chunk_contexts[chunk] = {
+                'full_poem': poem,
+                'previous_chunk': chunks[i-1] if i > 0 else None,
+                'chunk_index': i
+            }
+
+        print("\nPhase 1: Generating images for all half-stanzas...")
+        for i, chunk in enumerate(tqdm(chunks, desc="Processing half-stanzas")):
+            print(f"\nProcessing half-stanza: {chunk}")
+
+            context = {
+                'full_poem': poem,
+                'previous_chunk': chunks[i-1] if i > 0 else None,
+                'chunk_index': i
+            }
+
+            chunk_analysis = self.poem_analyzer.get_contextual_analysis(
+                poem,
+                chunk,
+                context
+            )
+
+            for model_name, model in self.models.items():
+                print(f"\nUsing model: {model_name}")
+
+                try:
+                    start_time = time.time()
+
+                    main_prompt = chunk_analysis["compact_prompt"]
+                    negative_prompt = "low quality, blurry, bad anatomy, bad composition, deformed, split image, collage, grid, multiple panels, comic panels, storyboard"
+
+                    print(f"Generated prompt: {main_prompt}")
+
+                    # Create poem-specific directory
+                    poem_dir = f"objective-1-temp-imgGen-metadata/{poem_title}"
+                    os.makedirs(poem_dir, exist_ok=True)
+                    
+                    prompts_txt = f"{poem_dir}/prompt.txt"
+
+                    try:
+                        with open(prompts_txt, 'a') as file:
+                            file.write(main_prompt + '\n')
+                        print(f"Successfully appended to {prompts_txt}")
+                    except FileNotFoundError:
+                        print(f"Error: File '{prompts_txt}' not found.")
+                    except Exception as e:
+                        print(f"An error occurred: {e}")
+
+                    num_samples = 5
+
+                    optimal_scale = optimize_guidance_scale(
+                        model,
+                        main_prompt,
+                        negative_prompt,
+                        num_samples
+                    )
+
+                    print(f"Generating {num_samples} images with prompt: {main_prompt}")
+
+                    images, likelihoods = model.generate_images(
+                        main_prompt,
+                        negative_prompt=negative_prompt,
+                        num_samples=num_samples,
+                        guidance_scale=optimal_scale
+                    )
+
+                    if images and len(images) > 0 and len(likelihoods) > 0:
+                        generation_time = time.time() - start_time
+                        best_idx = np.argmax(likelihoods)
+                        best_image = images[best_idx]
+
+                        results[model_name]['best_images'].append({
+                            'image': best_image,
+                            'text': chunk,
+                            'prompt': main_prompt,
+                            'likelihood': likelihoods[best_idx],
+                            'analysis': chunk_analysis
+                        })
+
+                        image_path = f"{poem_dir}/halfStanza_{len(results[model_name]['images'])+1}.png"
+                        best_image.save(image_path)
+
+                        results[model_name]['images'].append(image_path)
+                        results[model_name]['prompts'].append(main_prompt)
+                        results[model_name]['chunk_texts'].append(chunk)
+                        results[model_name]['scores'].append(likelihoods[best_idx])
+                        results[model_name]['generation_times'].append(generation_time)
+                        results[model_name]['clip_scores'].append(np.mean(likelihoods))
+                        results[model_name]['optimization_results'].append(optimal_scale)
+
+                        self.display_model_comparison(
+                            images,
+                            likelihoods,
+                            model_name,
+                            main_prompt,
+                            generation_time,
+                            optimal_scale,
+                            chunk_analysis
+                        )
+                    else:
+                        print(f"No valid images generated for {model_name}")
+
+                except Exception as e:
+                    print(f"Error processing chunk with {model_name}: {str(e)}")
+                    traceback.print_exc()
+                    continue
+
+        return results
+
+    def display_model_comparison(self, images, likelihoods, model_name, prompt, generation_time, guidance_scale, analysis):
+        mean_image, variance_image = self.models[model_name].compute_mean_and_variance(images)
+
+        n = len(images) + 2
+        fig = plt.figure(figsize=(5*n, 12))
+        gs = gridspec.GridSpec(4, n, height_ratios=[1, 1, 8, 1])
+
+        prompt_ax = plt.subplot(gs[1, :])
+        prompt_ax.axis('off')
+        prompt_ax.text(0.5, 0.5, f"Model: {model_name}\nPrompt: {prompt}",
+                      ha='center', va='center', wrap=True,
+                      fontsize=12)
+
+        axes = [plt.subplot(gs[2, i]) for i in range(n)]
+        best_idx = np.argmax(likelihoods)
+
+        for i, (ax, img) in enumerate(zip(axes[:len(images)], images)):
+            ax.imshow(img)
+            ax.axis('off')
+
+            if i == best_idx:
+                title = f"Selected Image\nLikelihood: {likelihoods[i]:.3f}"
+                ax.set_title(title, color='green', fontweight='bold')
+            else:
+                title = f"Sample {i+1}\nLikelihood: {likelihoods[i]:.3f}"
+                ax.set_title(title)
+
+        axes[-2].imshow(mean_image)
+        axes[-2].axis('off')
+        axes[-2].set_title("Mean Image")
+
+        axes[-1].imshow(variance_image, cmap='viridis')
+        axes[-1].axis('off')
+        axes[-1].set_title("Variance Image")
+
+        metrics_ax = plt.subplot(gs[3, :])
+        metrics_ax.axis('off')
+        metrics_text = f"Generation Time: {generation_time:.2f}s | "
+        metrics_text += f"Mean CLIP Score: {np.mean(likelihoods):.3f} | "
+        metrics_text += f"Optimal Guidance Scale: {guidance_scale:.2f}"
+        metrics_ax.text(0.5, 0.5, metrics_text,
+                       ha='center', va='center',
+                       fontsize=10)
+
+        plt.tight_layout()
+        plt.show()
+
+def optimize_guidance_scale(model, prompt, negative_prompt="", num_samples=5):
+    def objective(guidance_scale):
+        try:
+            images, likelihoods = model.generate_images(
+                prompt,
+                negative_prompt=negative_prompt,
+                num_samples=num_samples,
+                guidance_scale=guidance_scale
+            )
+            return np.mean(likelihoods) if len(likelihoods) > 0 else 0.0
+        except Exception as e:
+            print(f"Error in objective function: {str(e)}")
+            return 0.0
+
+    try:
+        optimizer = BayesianOptimization(
+            f=objective,
+            pbounds={"guidance_scale": (7.0, 12.0)},
+            random_state=42,
+            verbose=0
+        )
+
+        optimizer.maximize(
+            init_points=2,
+            n_iter=5
+        )
+        return optimizer.max['params']['guidance_scale']
+    except Exception as e:
+        print(f"Error in optimization: {str(e)}")
+        return 5
+
+def process_poem_batch(poem_titles):
+    """Process multiple poems and generate videos for each"""
+    
+    # Create base directories
+    os.makedirs("objective-1-temp-imgGen-metadata", exist_ok=True)
+    os.makedirs("objective-1-temp-vidGen-metadata", exist_ok=True)
+    os.makedirs("objective-1-generatedVid", exist_ok=True)
+    
+    json_file_path = '../Poem Database/poem_database.json'
+    
+    try:
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"Error loading poems file: {e}")
+        return
+
+    # Initialize experiment
+    experiment = ModelComparisonExperiment()
+    video_pipeline = ImageToVideoPipeline(device="cuda")
+    
+    # Track processing statistics
+    successful_poems = []
+    failed_poems = []
+    
+    for i, poem_title in enumerate(poem_titles, 1):
+        print(f"\n{'='*60}")
+        print(f"PROCESSING POEM {i}/{len(poem_titles)}: {poem_title}")
+        print(f"{'='*60}")
+        
+        try:
+            # Check if this poem was already completed
+            final_video_path = f"objective-1-generatedVid/{poem_title}_final_video.mp4"
+            if os.path.exists(final_video_path):
+                print(f"Poem {poem_title} already completed. Skipping...")
+                successful_poems.append(poem_title)
+                continue
+            
+            # Load poem data
+            poem_data = load_poem_from_json(json_file_path, poem_title)
+            if not poem_data:
+                print(f"Failed to load poem data for {poem_title}.")
+                failed_poems.append(poem_title)
+                continue
+
+            poem = poem_data['content']
+            
+            # Create poem-specific directories
+            poem_dir = f"objective-1-temp-imgGen-metadata/{poem_title}"
+            frame_output_dir = f"objective-1-temp-vidGen-metadata/{poem_title}/transition_frames"
+            video_output_dir = f"objective-1-temp-vidGen-metadata/{poem_title}/videos"
+            
+            os.makedirs(poem_dir, exist_ok=True)
+            os.makedirs(frame_output_dir, exist_ok=True) 
+            os.makedirs(video_output_dir, exist_ok=True)
+            
+            # Clear prompt file for this poem
+            prompts_txt = f"{poem_dir}/prompt.txt"
+            with open(prompts_txt, 'w') as file:
+                file.write("")
+
+            # Save poem content
+            poem_txt = f"{poem_dir}/poem.txt"
+            try:
+                with open(poem_txt, 'w') as f:
+                    f.write(poem)
+                print(f"Successfully wrote to {poem_txt}")
+            except Exception as e:
+                print(f"Could not write poem content to file: {e}")
+
+            print(f"\nLoaded poem: {poem_data['title']}")
+            print(f"Author: {poem_data['author']}")
+            print(f"Content: {poem}")
+
+            # Generate images
+            results = experiment.run_comparison(poem, poem_title)
+
+            # Generate video for this poem
+            try:
+                # Read inputs for video generation
+                def read_poem_and_split(poem_path):
+                    with open(poem_path, 'r', encoding='utf-8') as f:
+                        poem = f.read().strip()
+                    sentences = re.split('[，。！？；\n]', poem)
+                    sentences = [s.strip() for s in sentences if s.strip()]
+                    return sentences
+
+                def read_prompts(prompt_path):
+                    with open(prompt_path, 'r', encoding='utf-8') as f:
+                        prompts = [line.strip() for line in f if line.strip()]
+                    return prompts
+
+                def get_image_paths(image_dir):
+                    def extract_number(filename):
+                        match = re.search(r'halfStanza_(\d+)\.png', filename)
+                        return int(match.group(1)) if match else 0
+
+                    image_files = [f for f in os.listdir(image_dir) if f.startswith('halfStanza_') and f.endswith('.png')]
+                    image_files.sort(key=extract_number)
+                    return [os.path.join(image_dir, f) for f in image_files]
+
+                # Get inputs
+                subtitles = read_poem_and_split(poem_txt)
+                prompts = read_prompts(prompts_txt)
+                image_paths = get_image_paths(poem_dir)
+
+                # Verify input lengths match
+                min_length = min(len(subtitles), len(prompts), len(image_paths))
+                if not (len(subtitles) == len(prompts) == len(image_paths)):
+                    print(f"Warning: Mismatch in input lengths. Using first {min_length} items from each.")
+                    subtitles = subtitles[:min_length]
+                    prompts = prompts[:min_length]
+                    image_paths = image_paths[:min_length]
+
+                print(f"\nGenerating video for {poem_title}...")
+                print(f"Found {len(image_paths)} images, {len(subtitles)} subtitles, {len(prompts)} prompts")
+
+                # Generate SVD videos
+                svd_videos = []
+                transition_videos = []
+
+                for i, (image_path, subtitle) in enumerate(zip(image_paths, subtitles)):
+                    svd_output = f"{video_output_dir}/svd_{i+1}.mp4"
+                    video_pipeline.generate_svd_video(image_path, svd_output, subtitle)
+                    svd_videos.append(svd_output)
+
+                # Generate transition videos
+                for i in range(len(image_paths) - 1):
+                    transition_dir = f"{frame_output_dir}/transition_{i+1}_to_{i+2}"
+                    transition_output = f"{video_output_dir}/transition_{i+1}_to_{i+2}.mp4"
+
+                    video_pipeline.generate_transition_frames(
+                        image_paths[i],
+                        image_paths[i+1],
+                        prompts[i],
+                        prompts[i+1],
+                        transition_dir
+                    )
+
+                    video_pipeline.create_video_from_frames(transition_dir, transition_output, "")
+                    transition_videos.append(transition_output)
+
+                # Combine videos
+                final_video_sequence = []
+                for i in range(len(svd_videos)):
+                    final_video_sequence.append(svd_videos[i])
+                    if i < len(transition_videos):
+                        final_video_sequence.append(transition_videos[i])
+
+                # Final video path
+                video_pipeline.combine_videos(final_video_sequence, final_video_path)
+                print(f"Final video saved to: {final_video_path}")
+
+            except Exception as e:
+                print(f"Error generating video for {poem_title}: {str(e)}")
+                traceback.print_exc()
+                failed_poems.append(poem_title)
+                continue
+
+            # Generate report for this poem
+            try:
+                report = pd.DataFrame({
+                    model_name: {
+                        'Mean CLIP Score': np.mean(data['clip_scores']) if data['clip_scores'] else 0.0,
+                        'Mean Generation Time': np.mean(data['generation_times']) if data['generation_times'] else 0.0,
+                        'Mean Optimal Scale': np.mean(data['optimization_results']) if data['optimization_results'] else 0.0,
+                        'Best Score': max(data['scores']) if data['scores'] else 0.0,
+                        'Worst Score': min(data['scores']) if data['scores'] else 0.0
+                    }
+                    for model_name, data in results.items()
+                }).T
+
+                print(f"\nModel Comparison Report for {poem_title}:")
+                print(report)
+
+                # Save report
+                report_path = f"objective-1-generatedVid/{poem_title}_report.csv"
+                report.to_csv(report_path)
+                print(f"Report saved to: {report_path}")
+
+            except Exception as e:
+                print(f"Error generating report for {poem_title}: {str(e)}")
+
+            # If we reach here, the poem was processed successfully
+            successful_poems.append(poem_title)
+            print(f"Successfully completed {poem_title}")
+            
+        except Exception as e:
+            print(f"Error processing poem {poem_title}: {str(e)}")
+            traceback.print_exc()
+            failed_poems.append(poem_title)
+            print(f"Failed to process {poem_title}. Continuing with next poem...")
+            continue
+
+    # Print final summary for this batch
+    print(f"\n{'='*60}")
+    print("BATCH PROCESSING SUMMARY")
+    print(f"{'='*60}")
+    print(f"Total poems processed: {len(poem_titles)}")
+    print(f"Successful: {len(successful_poems)}")
+    print(f"Failed: {len(failed_poems)}")
+    
+    if successful_poems:
+        print(f"\nSuccessful poems:")
+        for poem in successful_poems:
+            print(f"  ✓ {poem}")
+    
+    if failed_poems:
+        print(f"\nFailed poems:")
+        for poem in failed_poems:
+            print(f"  ✗ {poem}")
+        print(f"\nFailed poems can be retried by running the script again.")
+
+def main():
+    """Main function for automated batch processing of poems"""
+    try:
+        # Path to the poem database
+        json_file_path = '../Poem Database/poem_database.json'
+        
+        # Check if database file exists
+        if not os.path.exists(json_file_path):
+            print(f"Error: Poem database not found at {json_file_path}")
+            print("Please ensure the file exists and the path is correct.")
+            return
+        
+        print("="*60)
+        print("AUTOMATED POEM VIDEO GENERATION PIPELINE")
+        print("="*60)
+        
+        # Get poems that need to be processed
+        poems_to_process = get_poems_to_process(json_file_path)
+        
+        if not poems_to_process:
+            print("No poems to process. Exiting.")
+            return
+        
+        # Ask user for confirmation
+        response = input(f"\nProceed with processing {len(poems_to_process)} poems? (y/n): ").strip().lower()
+        if response != 'y':
+            print("Processing cancelled by user.")
+            return
+        
+        print(f"\nStarting automated batch processing...")
+        
+        # Process the poems
+        process_poem_batch(poems_to_process)
+        
+        print(f"\n{'='*60}")
+        print("AUTOMATED PROCESSING COMPLETED")
+        print(f"{'='*60}")
+        
+        # Show final summary
+        final_completed = get_completed_poems()
+        final_remaining = get_poems_to_process(json_file_path)
+        
+        print(f"\nFINAL SUMMARY:")
+        print(f"Successfully processed: {len(final_completed)} poems")
+        if final_remaining:
+            print(f"Still remaining: {len(final_remaining)} poems")
+            print("Run the script again to process remaining poems.")
+        else:
+            print("All poems have been successfully processed!")
+            
+    except KeyboardInterrupt:
+        print(f"\n\nProcessing interrupted by user.")
+        print("You can run the script again to resume from where it left off.")
+    except Exception as e:
+        print(f"An error occurred in main: {str(e)}")
+        traceback.print_exc()
+        print("\nYou can run the script again to resume processing.")
+
+if __name__ == "__main__":
+    main()
